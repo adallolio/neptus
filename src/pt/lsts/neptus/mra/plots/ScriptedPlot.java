@@ -55,7 +55,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 
 import groovy.lang.GroovyShell;
-import pt.lsts.imc.Announce;
 import pt.lsts.imc.lsf.LsfIndex;
 import pt.lsts.neptus.i18n.I18n;
 import pt.lsts.neptus.mra.LogMarker;
@@ -110,7 +109,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         CompilerConfiguration cnfg = new CompilerConfiguration();
         ImportCustomizer imports = new ImportCustomizer();
         imports.addStarImports("pt.lsts.imc", "java.lang.Math", "pt.lsts.neptus.mra.plots");
-        imports.addStaticStars("pt.lsts.neptus.mra.plots.ScriptedPlotGroovy");
+        imports.addStaticStars("pt.lsts.neptus.plugins.mraplots.ScriptedPlotGroovy");
         cnfg.addCompilationCustomizers(imports);
         shell = new GroovyShell(this.getClass().getClassLoader(), cnfg);
         runScript(scriptPath);
@@ -137,6 +136,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             shell.parse(script);
             shell.evaluate(script);
             reader.close();
+            shell.getContext().getVariables().clear();
         }
         catch (Exception e) {
             GuiUtils.errorMessage(mra, "Error Parsing Script", e.getClass().getName());

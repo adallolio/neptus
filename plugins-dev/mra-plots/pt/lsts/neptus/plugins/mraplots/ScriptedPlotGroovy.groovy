@@ -30,7 +30,7 @@
  * Author: keila
  * Feb 8, 2019
  */
-package pt.lsts.neptus.mra.plots
+package pt.lsts.neptus.plugins.mraplots
 
 import org.jfree.data.time.Millisecond
 import org.jfree.data.time.TimeSeries
@@ -38,6 +38,7 @@ import org.jfree.data.time.TimeSeriesDataItem
 import org.jfree.data.time.TimeSeriesCollection
 import org.jfree.data.xy.XYDataItem
 import org.jfree.data.xy.XYSeries
+import pt.lsts.neptus.mra.plots.ScriptedPlot
 
 /**
  * @author keila
