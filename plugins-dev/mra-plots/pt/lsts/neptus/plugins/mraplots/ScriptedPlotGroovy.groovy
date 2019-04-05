@@ -141,7 +141,8 @@ class ScriptedPlotGroovy  {
         result
     }
     
-    static public TimeSeriesDataItem getTimeSeriesMinItem(TimeSeriesCollection tsc) {
+    static public TimeSeriesDataItem getTimeSeriesMinItem(String id) {
+        TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
         double min = Double.MAX_VALUE
         TimeSeriesDataItem result
          tsc.getSeries().each { 
@@ -155,34 +156,40 @@ class ScriptedPlotGroovy  {
         }
         result
     }
-        
-    static public LinkedHashMap<String,Double> getAGV (String id) {
+    
+    static public double getAGV (String id) {
+        def item = getAGVItem(id)
+        if(item==null)
+            return Double.NaN
+        item.getValue().doubleValue()
+    }
+    
+    static public TimeSeriesDataItem getAGVItem (String id) {
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
-        tsc.getSeries().collectEntries {[(it.getKey()): getAGV(it) ]}
-    }
-    
-    static public double getAGV (TimeSeries ts) {
-        getAGVItem(ts).getValue().doubleValue()
-    }
-    
-    static public TimeSeriesDataItem getAGVItem (TimeSeries ts) {
-        TimeSeriesDataItem item
-        double avg = 0.0
-        int n = ts.getItemCount()
-        for(int i=0;i<n;i++) {
-            avg+= ts.getDataItem(i)
+        if(tsc!=null && tsc.seriesCount > 0) {
+            TimeSeries ts = tsc.getSeries().get(0)
+            TimeSeriesDataItem item
+            double avg = 0.0
+            int n = ts.getItemCount()
+            for(int i=0;i<n;i++) {
+                avg+= ts.getDataItem(i).getValue().doubleValue()
+            }
+            
+            def value = avg/(double)n
+            long init_time = ts.getDataItem(0).getPeriod().getFirstMillisecond()
+            long end_time = ts.getDataItem(0).getPeriod().getFirstMillisecond()
+            long avg_time = (end_time - init_time)/2 
+            def millis = new Millisecond(new Date(avg_time), TimeZone.getTimeZone("UTC"), Locale.getDefault())
+            item = new TimeSeriesDataItem(millis, value)
+            return item
         }
-        def value = avg/(double)n
-        def init_time = ts.getDataItem(0)
-        def end_time = ts.getDataItem(0)
-        def avg_time = (end_time - init_time)/2;
-        item = new TimeSeriesDataItem(avg_time, value)
-        item
+        return null
     }
     
     static public void markFromItem(String id,TimeSeriesDataItem item) {
-        if(item != null)
+        if(item != null) {
             mark id,item.getPeriod().getFirstMillisecond()/1000
+        }
     }
     static public sum = { double1, double2 -> double1+double2}
     
@@ -196,16 +203,7 @@ class ScriptedPlotGroovy  {
         else
             Double.NaN             
             }
-    
-    static public List<TimeSeriesDataItem> getAGVItems (TimeSeriesCollection tsc) {
-        List<TimeSeriesDataItem> result = new ArrayList<>()
-        tsc.getSeries().each { ts->
-             TimeSeriesDataItem item = getAVGItem((TimeSeries)ts)
-             result.add item
-        }
-        result
-    }
-    
+  
     static public void mark(String label,double time) {
         scriptedPlot.mark(time,label)
     }
