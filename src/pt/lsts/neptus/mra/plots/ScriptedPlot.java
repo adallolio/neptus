@@ -326,13 +326,13 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
          * This method evaluates a field expression (like "EstimatedState[Navigation].x") and returns its current value
          * in the log
          * 
-         * @param expression The expression to be valuated
+         * @param expression The expression to be evaluated
          * @return The value (double) or Double.NaN if the expression is invalid or the log does not contain the
          *         required fields at current time
          */
         public double val(String expression, String source) {
 
-            Pattern p = Pattern.compile("(\\w+)(\\[(\\w+)\\])?\\.(\\w+)");
+            Pattern p = Pattern.compile("(\\w+)(\\.(\\w+(\\s\\w+)*))?\\.(\\w+)");
             Matcher m = p.matcher(expression);
 
             if (!m.matches()) {
@@ -340,14 +340,16 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             }
             String message, entity, field;
             message = m.group(1);
+
             if (m.groupCount() > 2) {
                 entity = m.group(3);
-                field = m.group(4);
+                field = m.group(m.groupCount());
             }
             else {
                 entity = null;
                 field = m.group(2);
             }
+
             int msgType = index.getDefinitions().getMessageId(message);
 
             if (entity == null) {
