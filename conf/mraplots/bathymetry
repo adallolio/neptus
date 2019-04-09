@@ -5,7 +5,7 @@ plot "Altitude": "EstimatedState.alt", "Depth":"EstimatedState.depth"
 bathy = apply ("Bathymetry", "Depth", "Altitude",sum)
 plot bathy
 
-deepestP = getTimeSeriesMaxItem "Bathymetry"
-markFromItem "Deepest Point", deepestP
+deepestP = getTimeSeriesMaxTime "Bathymetry"
+plotDomainMarker "Deepest Point", deepestP
 
 

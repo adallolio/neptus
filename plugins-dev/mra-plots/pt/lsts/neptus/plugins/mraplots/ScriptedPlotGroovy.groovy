@@ -148,7 +148,7 @@ class ScriptedPlotGroovy  {
          tsc.getSeries().each { 
             for (int i=0;i<it.getItemCount();i++) {
                 TimeSeriesDataItem t = it.getDataItem(i)
-                if(t.getValue() < min) {
+                if(min > t.getValue()) {
                     min    = t.getValue()
                     result = new TimeSeriesDataItem(t.getPeriod(),t.getValue().doubleValue())
                 }
@@ -157,40 +157,74 @@ class ScriptedPlotGroovy  {
         result
     }
     
-    static public double getAGV (String id) {
-        def item = getAGVItem(id)
-        if(item==null)
-            return Double.NaN
-        item.getValue().doubleValue()
+    static public double getTimeSeriesMinValue(String id) {
+        def item = getTimeSeriesMinItem(id)
+        if(item!=null)
+            item.getValue().doubleValue()
+        else
+            Double.NaN
     }
     
-    static public TimeSeriesDataItem getAGVItem (String id) {
-        TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
-        if(tsc!=null && tsc.seriesCount > 0) {
-            TimeSeries ts = tsc.getSeries().get(0)
-            TimeSeriesDataItem item
-            double avg = 0.0
-            int n = ts.getItemCount()
-            for(int i=0;i<n;i++) {
-                avg+= ts.getDataItem(i).getValue().doubleValue()
+    static public double getTimeSeriesMaxValue(String id) {
+        def item = getTimeSeriesMaxItem(id)
+        if(item!=null)
+            item.getValue().doubleValue()
+        else
+            Double.NaN
+    }
+    
+    static public long getTimeSeriesMinTime(String id) {
+        def item = getTimeSeriesMinItem(id)
+        if(item!=null)
+            item.getPeriod().getFirstMillisecond()
+        else
+            Double.NaN
+    }
+    
+    static public long getTimeSeriesMaxTime(String id) {
+        def item = getTimeSeriesMaxItem(id)
+        if(item!=null)
+            item.getPeriod().getFirstMillisecond()
+        else
+            Double.NaN
+    }
+    
+     static public double getAGVFor(String id) {
+        double result
+        String system,key=""
+        String [] split = id.split("\\.")
+        if( split.length > 1) {
+            system = split[0]
+            key = id.substring(system.size()+1)//skip the dot "."
+            TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(key)
+            if(tsc!=null && tsc.seriesCount > 0) {
+                Iterator iter = tsc.getSeries().iterator()
+                while(iter.hasNext()) {
+                    double total = 0.0
+                    TimeSeries ts = iter.next()
+                    if(!ts.getKey().toString().equalsIgnoreCase(id))
+                        continue
+                    int n = ts.getItemCount()
+                    for(int i=0;i<n;i++) {
+                        double aux = new Double(ts.getDataItem(i).getValue()).doubleValue()
+                        if(aux != Double.NaN)
+                            total = total + aux
+                    }
+                    result = total/(double)n
+                }
             }
-            
-            def value = avg/(double)n
-            long init_time = ts.getDataItem(0).getPeriod().getFirstMillisecond()
-            long end_time = ts.getDataItem(0).getPeriod().getFirstMillisecond()
-            long avg_time = (end_time - init_time)/2 
-            def millis = new Millisecond(new Date(avg_time), TimeZone.getTimeZone("UTC"), Locale.getDefault())
-            item = new TimeSeriesDataItem(millis, value)
-            return item
         }
-        return null
+        if (result==null)
+            return Double.NaN
+        return result
     }
     
-    static public void markFromItem(String id,TimeSeriesDataItem item) {
-        if(item != null) {
-            mark id,item.getPeriod().getFirstMillisecond()/1000
+    static public void plotRangeMarker(String id,double value) {
+        if(scriptedPlot!= null) {
+            scriptedPlot.addRangeMarker(id, value)
         }
     }
+    
     static public sum = { double1, double2 -> double1+double2}
     
     static public diff = { double1, double2 -> double1-double2}
@@ -204,7 +238,7 @@ class ScriptedPlotGroovy  {
             Double.NaN             
             }
   
-    static public void mark(String label,double time) {
+    static public void plotDomainMarker(String label,long time) {
         scriptedPlot.mark(time,label)
     }
 
