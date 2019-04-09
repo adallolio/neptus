@@ -32,15 +32,19 @@
  */
 package pt.lsts.neptus.mra.plots;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +52,11 @@ import java.util.regex.Pattern;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.ui.RectangleAnchor;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -73,6 +81,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     protected LinkedHashMap<String, String> traces = new LinkedHashMap<>();
     protected TimeSeriesCollection customTsc = new TimeSeriesCollection();
     protected Vector<String> hiddenFiles = new Vector<>();
+    protected Map<ValueMarker,LogMarker> rangeMarks = new HashMap<>();
     protected LinkedHashMap<String, TimeSeries> hiddenSeries = new LinkedHashMap<>();
     protected LsfIndex index;
     protected ScriptableIndex scIndex = null;
@@ -143,7 +152,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             e.printStackTrace();
         }
     }
-
+    
     @Override
     public boolean canBeApplied(LsfIndex index) {
         for(String s: traces.values()) {
@@ -221,7 +230,6 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
 
     @Override
     public void process(LsfIndex source) {
-        //System.err.println("Processing "+title+"!");
         this.scIndex = new ScriptableIndex(source, 0);
         this.index = source;
 
@@ -249,9 +257,43 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             for(int i= 0;i<t.getItemCount();i++)  {
                 TimeSeriesDataItem item = t.getDataItem(i);
                 t.getMaximumItemAge();
-                addValue(item.getPeriod().getFirstMillisecond(), t.getKey().toString(), item.getValue().doubleValue());
+                if(item.getValue().doubleValue()!= Double.NaN)
+                    addValue(item.getPeriod().getFirstMillisecond(), t.getKey().toString(), item.getValue().doubleValue());
             }
 
+    }
+    
+    private void addRangeMarker (ValueMarker marker) {
+        if(chart!=null)
+            chart.getXYPlot().addRangeMarker(marker);
+    }
+    
+    public void addRangeMarker (String label,double value) {
+        if (processed) {
+            ValueMarker marker = new ValueMarker(value);
+            LogMarker lm = new LogMarker(label, value, 0, 0);
+            marker.setLabel(label);
+            marker.setPaint(Color.black);
+            marker.setLabelAnchor(RectangleAnchor.BOTTOM_RIGHT);
+            marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+            rangeMarks.put(marker,lm);
+            mraPanel.getLogTree().addMarker(lm);
+            addRangeMarker(marker);
+        }
+    }
+    
+    @Override
+    public void removeLogMarker(LogMarker e) {
+        for(Entry<ValueMarker,LogMarker> entry: rangeMarks.entrySet()) {
+            ValueMarker m = entry.getKey();
+            if(m.getLabel().equals(e.getLabel())) {
+                rangeMarks.remove(m);
+                if(chart != null)
+                    chart.getXYPlot().removeRangeMarker(m);
+                break;
+            }
+        }
+        super.removeLogMarker(e);
     }
     
     @Override
@@ -261,7 +303,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         tsc = new TimeSeriesCollection();
         customTsc = new TimeSeriesCollection();
         series.clear();
-        hiddenSeries.clear(); 
+        hiddenSeries.clear();
         process(index);
         chart = createChart();
         XYItemRenderer r = chart.getXYPlot().getRenderer();
@@ -272,6 +314,12 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         }
         for (LogMarker marker : mraPanel.getMarkers()) {
             addLogMarker(marker);
+        }
+        chart.getXYPlot().clearRangeMarkers();
+        for(Entry<ValueMarker,LogMarker> e: rangeMarks.entrySet()) {
+            ValueMarker m = e.getKey();
+            mraPanel.getLogTree().removeMarker(e.getValue());
+            addRangeMarker(m);
         }
         return chart;
     }
@@ -290,7 +338,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
 
     public void mark(double time, String label) {
         if(processed)
-            mraPanel.addMarker(new LogMarker(label, time * 1000, 0, 0));
+            mraPanel.addMarker(new LogMarker(label, time, 0, 0));
     }
     /**
      * This internal class allows plot scripts to access the current log time and message fields in the log
