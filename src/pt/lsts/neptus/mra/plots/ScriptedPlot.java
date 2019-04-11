@@ -35,7 +35,6 @@ package pt.lsts.neptus.mra.plots;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ import java.util.regex.Pattern;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ImportCustomizer;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.ui.RectangleAnchor;
@@ -141,7 +139,6 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             String defplot = "configPlot plot_";
             shell.evaluate(defplot);
             String script = sb.toString();
-            //System.err.println("Running Script: \n"+script);
             shell.parse(script);
             shell.evaluate(script);
             reader.close();
@@ -264,8 +261,10 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     }
     
     private void addRangeMarker (ValueMarker marker) {
-        if(chart!=null)
+        if(chart!=null) {
             chart.getXYPlot().addRangeMarker(marker);
+            mraPanel.getLogTree().addMarker(rangeMarks.get(marker));
+        }
     }
     
     public void addRangeMarker (String label,double value) {
@@ -277,22 +276,12 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             marker.setLabelAnchor(RectangleAnchor.BOTTOM_RIGHT);
             marker.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
             rangeMarks.put(marker,lm);
-            mraPanel.getLogTree().addMarker(lm);
-            addRangeMarker(marker);
         }
     }
     
     @Override
     public void removeLogMarker(LogMarker e) {
-        for(Entry<ValueMarker,LogMarker> entry: rangeMarks.entrySet()) {
-            ValueMarker m = entry.getKey();
-            if(m.getLabel().equals(e.getLabel())) {
-                rangeMarks.remove(m);
-                if(chart != null)
-                    chart.getXYPlot().removeRangeMarker(m);
-                break;
-            }
-        }
+        removeMarkerFromTree(e);
         super.removeLogMarker(e);
     }
     
@@ -304,6 +293,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         customTsc = new TimeSeriesCollection();
         series.clear();
         hiddenSeries.clear();
+        clearRangeMarkers();
         process(index);
         chart = createChart();
         XYItemRenderer r = chart.getXYPlot().getRenderer();
@@ -313,15 +303,40 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             }
         }
         for (LogMarker marker : mraPanel.getMarkers()) {
-            addLogMarker(marker);
+                addLogMarker(marker);
         }
         chart.getXYPlot().clearRangeMarkers();
         for(Entry<ValueMarker,LogMarker> e: rangeMarks.entrySet()) {
             ValueMarker m = e.getKey();
-            mraPanel.getLogTree().removeMarker(e.getValue());
             addRangeMarker(m);
         }
         return chart;
+    }
+
+    /**
+     * Remove markers from logTree to avoid duplicates
+     */
+    private void clearRangeMarkers() {
+        for (LogMarker e : rangeMarks.values()) {
+            removeMarkerFromTree(e);
+        }
+        rangeMarks.clear();
+    }
+
+    /**
+     * @param e
+     */
+    private void removeMarkerFromTree(LogMarker e) {
+        for (Entry<ValueMarker, LogMarker> entry : rangeMarks.entrySet()) {
+            ValueMarker m = entry.getKey();
+            if (m.getLabel().equals(e.getLabel()) && e.equals(entry.getValue())) {
+                mraPanel.getLogTree().removeMarker(entry.getValue());
+                rangeMarks.remove(m);
+                if (chart != null)
+                    chart.getXYPlot().removeRangeMarker(m);
+                break;
+            }
+        }
     }
     
     /**
