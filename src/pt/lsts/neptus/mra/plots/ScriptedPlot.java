@@ -305,7 +305,6 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         for (LogMarker marker : mraPanel.getMarkers()) {
                 addLogMarker(marker);
         }
-        chart.getXYPlot().clearRangeMarkers();
         for(Entry<ValueMarker,LogMarker> e: rangeMarks.entrySet()) {
             ValueMarker m = e.getKey();
             addRangeMarker(m);
