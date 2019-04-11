@@ -65,13 +65,15 @@ class ScriptedPlotGroovy  {
     }
        
     static void plot(TimeSeriesCollection tsc) {
-        tsc.getSeries().each { ts ->
+        tsc.getSeries().each { TimeSeries ts ->
             scriptedPlot.addTimeSeries(ts)
         }
     }
  
-    static void addQuery(String id,String query) {
-        scriptedPlot.addQuery(id,query)
+    static void addQuery(String... query) {
+        query.each {
+            scriptedPlot.addQuery(it,it)
+        }
     }
     
     static void addQuery(LinkedHashMap<String,String> queries) {
@@ -80,11 +82,27 @@ class ScriptedPlotGroovy  {
         }
     }
     
-    static public TimeSeriesCollection apply(String id=null,String queryID, Object function) {
+    static public TimeSeriesCollection apply(String queryID, Object function) {
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(queryID)
         TimeSeriesCollection result = new TimeSeriesCollection()
-                tsc.getSeries().each { ts ->
-                    String name = id ? ts.getKey().toString() : id
+                tsc.getSeries().each { TimeSeries ts ->
+                    String name = ts.getKey().toString()
+                    TimeSeries s = new TimeSeries(name)
+                    for(int i = 0;i<ts.getItemCount();i++) {
+                        def value = ts.getDataItem(i)
+                        def val = function.call(value.getValue())
+                        TimeSeriesDataItem item = new TimeSeriesDataItem(value.getPeriod(),val)
+                        s.add(item)
+                    }
+                    result.addSeries(s)
+                }
+        result
+    }
+    
+    static public TimeSeriesCollection apply(String name,String queryID, Object function) {
+        TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(queryID)
+        TimeSeriesCollection result = new TimeSeriesCollection()
+                tsc.getSeries().each { TimeSeries ts ->
                     TimeSeries s = new TimeSeries(name)
                     for(int i = 0;i<ts.getItemCount();i++) {
                         def value = ts.getDataItem(i)
@@ -127,14 +145,16 @@ class ScriptedPlotGroovy  {
     
     static public TimeSeriesDataItem getTimeSeriesMaxItem(String id) {
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
-        double max = Double.MIN_VALUE
+        double max = - Double.MAX_VALUE
         TimeSeriesDataItem result
         tsc.getSeries().each {
-            for (int i=0;i<it.getItemCount();i++) {
-                TimeSeriesDataItem t = it.getDataItem(i)
+            TimeSeries ts ->
+            for (int i=0;i<ts.getItemCount();i++) {
+                TimeSeriesDataItem t = ts.getDataItem(i)
                 if(t.getValue() > max) {
                     max    = t.getValue()
                     result = new TimeSeriesDataItem(t.getPeriod(),t.getValue().doubleValue())
+                    
                 }
             }
         }
@@ -146,11 +166,13 @@ class ScriptedPlotGroovy  {
         double min = Double.MAX_VALUE
         TimeSeriesDataItem result
          tsc.getSeries().each { 
-            for (int i=0;i<it.getItemCount();i++) {
-                TimeSeriesDataItem t = it.getDataItem(i)
+             TimeSeries ts ->
+            for (int i=0;i<ts.getItemCount();i++) {
+                TimeSeriesDataItem t = ts.getDataItem(i)
                 if(min > t.getValue()) {
                     min    = t.getValue()
                     result = new TimeSeriesDataItem(t.getPeriod(),t.getValue().doubleValue())
+                    
                 }
             }
         }
@@ -175,16 +197,19 @@ class ScriptedPlotGroovy  {
     
     static public long getTimeSeriesMinTime(String id) {
         def item = getTimeSeriesMinItem(id)
-        if(item!=null)
+        if(item!=null) {
             item.getPeriod().getFirstMillisecond()
+        }
         else
             Double.NaN
     }
     
     static public long getTimeSeriesMaxTime(String id) {
         def item = getTimeSeriesMaxItem(id)
-        if(item!=null)
+        if(item!=null) {
+            
             item.getPeriod().getFirstMillisecond()
+        }
         else
             Double.NaN
     }
@@ -239,7 +264,8 @@ class ScriptedPlotGroovy  {
             }
   
     static public void plotDomainMarker(String label,long time) {
-        scriptedPlot.mark(time,label)
+        if(scriptedPlot != null)
+            scriptedPlot.mark(time,label)
     }
 
     static void title(String t) {
