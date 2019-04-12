@@ -34,6 +34,7 @@ package pt.lsts.neptus.mra.plots;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Date;
@@ -66,6 +67,7 @@ import pt.lsts.neptus.i18n.I18n;
 import pt.lsts.neptus.mra.LogMarker;
 import pt.lsts.neptus.mra.MRAPanel;
 import pt.lsts.neptus.mra.importers.IMraLogGroup;
+import pt.lsts.neptus.util.FileUtil;
 import pt.lsts.neptus.util.GuiUtils;
 
 /**
@@ -89,6 +91,10 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     private MRAPanel mra;
     private String title = null;
     private boolean processed = false;
+
+    public boolean isProcessed() {
+        return processed;
+    }
 
     @Override
     public String getName() {
@@ -145,7 +151,9 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             shell.getContext().getVariables().clear();
         }
         catch (Exception e) {
-            GuiUtils.errorMessage(mra, "Error Parsing Script", e.getClass().getName());
+            String fileNAme = FileUtil.getFileNameWithoutExtension(new File(scriptPath));
+            String scriptRef = title==null ? fileNAme : getName();
+            GuiUtils.errorMessage(mra, "Error Parsing Script "+scriptRef, e.getClass().getName()+" "+e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -191,9 +199,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
         if(hiddenFiles.contains(id)) { 
             for(TimeSeries s: hiddenSeries.values()) {
                 String fields[] = s.getKey().toString().split("\\.");
-                String variable ="";
-                for(int i=1;i<fields.length;i++)
-                    variable+=fields[i];
+                String variable = s.getKey().toString().substring(fields[0].length()+1);
                 if(variable.equals(id)) {
                     tsc.addSeries(s);
                 }
@@ -203,15 +209,12 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
 
             for(TimeSeries s: series.values()) {
                 String fields[] = s.getKey().toString().split("\\.");
-                String variable ="";
-                for(int i=1;i<fields.length;i++)
-                    variable+=fields[i];
+                String variable = s.getKey().toString().substring(fields[0].length()+1);
                 if(variable.equals(id)) {
                     tsc.addSeries(s);
                 }
             }
         }
-        
         return tsc;
     }
 
@@ -239,9 +242,10 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
                 String src = index.getMessage(i).getSourceName();
                 String seriesName = src + "." + entry.getKey();
                 double value = scIndex.val(entry.getValue(),src);
-                if (value != Double.NaN) {
-                    if(hiddenFiles.contains(entry.getKey()))
+                if (value != Double.NaN && src != null) {
+                    if(hiddenFiles.contains(entry.getKey()) || forbiddenSeries.contains(entry.getKey())){
                         addHiddenValue((long)(index.timeOf(i)*1000), seriesName, value);
+                    }
                     else
                         addValue((long)(index.timeOf(i)*1000), seriesName, value);
                 }
@@ -346,6 +350,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     private void addHiddenValue(long timeMillis, String seriesName, double value) {
         if (!hiddenSeries.containsKey(seriesName)) {
             hiddenSeries.put(seriesName, new TimeSeries(seriesName));
+
         }
         hiddenSeries.get(seriesName).addOrUpdate(new Millisecond(new Date(timeMillis), TimeZone.getTimeZone("UTC"), Locale.getDefault()), value);
     }
@@ -358,6 +363,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
      * This internal class allows plot scripts to access the current log time and message fields in the log
      * 
      * @author zp
+     * @author keila - regex changes and filter source
      */
     public class ScriptableIndex {
 
@@ -429,10 +435,10 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             else {
                 int msgIdx = index.getPreviousMessageOfType(msgType, lsfPos);
                 while (msgIdx >= prevPos) {
-
-                    if (msgIdx == -1)
+                    String src = index.getMessage(msgIdx).getSourceName(); 
+                    if (msgIdx == -1 || src == null)
                         return Double.NaN;
-                    else if (index.entityNameOf(msgIdx).equals(entity) && index.getMessage(msgIdx).getSourceName().equals(source)) {
+                    else if (index.entityNameOf(msgIdx).equals(entity) && src.equals(source)) {
                         prevPos = msgIdx;
                         return index.getMessage(msgIdx).getDouble(field);
                     }

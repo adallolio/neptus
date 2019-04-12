@@ -96,6 +96,8 @@ class ScriptedPlotGroovy  {
                     }
                     result.addSeries(s)
                 }
+//                if(tsc.getSeriesCount() == 0)
+//           GuiUtils.errorMessage(mra, "Error retrieving data","No data for: "+ queryID);
         result
     }
     
@@ -117,7 +119,9 @@ class ScriptedPlotGroovy  {
     
     static public TimeSeriesCollection apply(String id,String queryID1,String queryID2, Object function) {
         TimeSeriesCollection tsc1 = scriptedPlot.getTimeSeriesFor(queryID1)
+        //System.err.println("Got data for "+queryID1)
         TimeSeriesCollection tsc2 = scriptedPlot.getTimeSeriesFor(queryID2)
+        //System.err.println("Got data for "+queryID2)
         TimeSeriesCollection result = new TimeSeriesCollection()
         int min_tsc = Math.min(tsc1.getSeriesCount(), tsc2.seriesCount)
         TimeSeries ts1, ts2,ts
@@ -144,6 +148,8 @@ class ScriptedPlotGroovy  {
     }
     
     static public TimeSeriesDataItem getTimeSeriesMaxItem(String id) {
+    	if(!scriptedPlot.isProcessed())
+    		return null
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
         double max = - Double.MAX_VALUE
         TimeSeriesDataItem result
@@ -162,6 +168,8 @@ class ScriptedPlotGroovy  {
     }
     
     static public TimeSeriesDataItem getTimeSeriesMinItem(String id) {
+    	if(!scriptedPlot.isProcessed())
+    		return null
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(id)
         double min = Double.MAX_VALUE
         TimeSeriesDataItem result
@@ -245,7 +253,7 @@ class ScriptedPlotGroovy  {
     }
     
     static public void plotRangeMarker(String id,double value) {
-        if(scriptedPlot!= null) {
+        if(scriptedPlot!= null || value == Double.NaN) {
             scriptedPlot.addRangeMarker(id, value)
         }
     }
@@ -264,7 +272,7 @@ class ScriptedPlotGroovy  {
             }
   
     static public void plotDomainMarker(String label,long time) {
-        if(scriptedPlot != null)
+        if(scriptedPlot != null || time != Double.NaN)
             scriptedPlot.mark(time,label)
     }
 
