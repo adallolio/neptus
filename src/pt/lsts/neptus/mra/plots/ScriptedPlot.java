@@ -192,10 +192,13 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     }
 
     public TimeSeriesCollection getTimeSeriesFor(String id) {
+        //System.err.println("Get TimeSeries for "+id);
         TimeSeriesCollection tsc = new TimeSeriesCollection();
         if(!processed)
             return tsc;
 
+//        if(forbiddenSeries.contains(traces.get(id)))
+//                System.err.println("Forbidden Series contains: "+traces.get(id));
         if(hiddenFiles.contains(id)) { 
             for(TimeSeries s: hiddenSeries.values()) {
                 String fields[] = s.getKey().toString().split("\\.");
@@ -232,7 +235,6 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     public void process(LsfIndex source) {
         this.scIndex = new ScriptableIndex(source, 0);
         this.index = source;
-
         double step = Math.max(timestep, 0.01);
         for (int i = index.advanceToTime(0, step); i != -1; 
                 i = index.advanceToTime(i, index.timeOf(i) + step)) {
@@ -243,28 +245,40 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
                 String seriesName = src + "." + entry.getKey();
                 double value = scIndex.val(entry.getValue(),src);
                 if (value != Double.NaN && src != null) {
-                    if(hiddenFiles.contains(entry.getKey()) || forbiddenSeries.contains(entry.getKey())){
+                    if(forbiddenSeries.contains(seriesName) && !hiddenFiles.contains(entry.getKey()))
+                        hiddenFiles.add(entry.getKey());
+                    if(!hiddenFiles.contains(entry.getKey())){
+                        addValue((long)(index.timeOf(i)*1000), seriesName, value);
+                    }
+                    else {
                         addHiddenValue((long)(index.timeOf(i)*1000), seriesName, value);
                     }
-                    else
-                        addValue((long)(index.timeOf(i)*1000), seriesName, value);
                 }
             }
         }
+//        System.err.println("Forbidden  series: "+Arrays.toString(forbiddenSeries.toArray()));
+//        System.err.println("Hidden  series: "+Arrays.toString(hiddenFiles.toArray()));
         processed = true;
         runScript(scriptPath);
-        //No need to iterate over timestep because previous data is already in the scale
-        for(TimeSeries t: (List<TimeSeries>)customTsc.getSeries())
-            for(int i= 0;i<t.getItemCount();i++)  {
+        // No need to iterate over timestep because previous data is already in the scale
+        for (TimeSeries t : (List<TimeSeries>) customTsc.getSeries()) {
+//            System.err.println("Custom Series: "+t.getKey().toString());
+            for (int i = 0; i < t.getItemCount(); i++) {
                 TimeSeriesDataItem item = t.getDataItem(i);
-                t.getMaximumItemAge();
-                if(item.getValue().doubleValue()!= Double.NaN)
-                    addValue(item.getPeriod().getFirstMillisecond(), t.getKey().toString(), item.getValue().doubleValue());
+                if (item.getValue().doubleValue() != Double.NaN)
+                    if (!forbiddenSeries.contains(t.getKey().toString())) {
+                        addValue(item.getPeriod().getFirstMillisecond(), t.getKey().toString(),
+                                item.getValue().doubleValue());
+                    }
+                    else {
+                        addHiddenValue(item.getPeriod().getFirstMillisecond(), t.getKey().toString(),
+                                item.getValue().doubleValue());
+                    }
             }
-
+        }
     }
-    
-    private void addRangeMarker (ValueMarker marker) {
+
+    private void addRangeMarker(ValueMarker marker) {
         if(chart!=null) {
             chart.getXYPlot().addRangeMarker(marker);
             mraPanel.getLogTree().addMarker(rangeMarks.get(marker));
@@ -285,7 +299,16 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     
     @Override
     public void removeLogMarker(LogMarker e) {
-        removeMarkerFromTree(e);
+        for (Entry<ValueMarker, LogMarker> entry : rangeMarks.entrySet()) {
+            ValueMarker m = entry.getKey();
+            if (m.getLabel().equals(e.getLabel()) && e.equals(entry.getValue())) {
+                mraPanel.getLogTree().removeMarker(entry.getValue());
+                rangeMarks.remove(m);
+                if (chart != null)
+                    chart.getXYPlot().removeRangeMarker(m);
+                break;
+            }
+        }
         super.removeLogMarker(e);
     }
     
@@ -320,26 +343,13 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
      * Remove markers from logTree to avoid duplicates
      */
     private void clearRangeMarkers() {
-        for (LogMarker e : rangeMarks.values()) {
-            removeMarkerFromTree(e);
-        }
-        rangeMarks.clear();
-    }
-
-    /**
-     * @param e
-     */
-    private void removeMarkerFromTree(LogMarker e) {
         for (Entry<ValueMarker, LogMarker> entry : rangeMarks.entrySet()) {
             ValueMarker m = entry.getKey();
-            if (m.getLabel().equals(e.getLabel()) && e.equals(entry.getValue())) {
                 mraPanel.getLogTree().removeMarker(entry.getValue());
-                rangeMarks.remove(m);
                 if (chart != null)
                     chart.getXYPlot().removeRangeMarker(m);
-                break;
-            }
         }
+        rangeMarks.clear();
     }
     
     /**
