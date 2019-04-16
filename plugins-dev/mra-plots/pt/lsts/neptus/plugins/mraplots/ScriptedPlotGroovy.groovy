@@ -96,8 +96,6 @@ class ScriptedPlotGroovy  {
                     }
                     result.addSeries(s)
                 }
-//                if(tsc.getSeriesCount() == 0)
-//           GuiUtils.errorMessage(mra, "Error retrieving data","No data for: "+ queryID);
         result
     }
     
@@ -105,7 +103,8 @@ class ScriptedPlotGroovy  {
         TimeSeriesCollection tsc = scriptedPlot.getTimeSeriesFor(queryID)
         TimeSeriesCollection result = new TimeSeriesCollection()
                 tsc.getSeries().each { TimeSeries ts ->
-                    TimeSeries s = new TimeSeries(name)
+                    def newName = ts.getKey().toString().split("\\.")[0]+ "."+name
+                    TimeSeries s = new TimeSeries(newName)
                     for(int i = 0;i<ts.getItemCount();i++) {
                         def value = ts.getDataItem(i)
                         def val = function.call(value.getValue())
@@ -119,11 +118,9 @@ class ScriptedPlotGroovy  {
     
     static public TimeSeriesCollection apply(String id,String queryID1,String queryID2, Object function) {
         TimeSeriesCollection tsc1 = scriptedPlot.getTimeSeriesFor(queryID1)
-        //System.err.println("Got data for "+queryID1)
         TimeSeriesCollection tsc2 = scriptedPlot.getTimeSeriesFor(queryID2)
-        //System.err.println("Got data for "+queryID2)
         TimeSeriesCollection result = new TimeSeriesCollection()
-        int min_tsc = Math.min(tsc1.getSeriesCount(), tsc2.seriesCount)
+        int min_tsc = Math.min(tsc1.getSeriesCount(), tsc2.getSeriesCount())
         TimeSeries ts1, ts2,ts
         for(int j=0;j<min_tsc;j++) {
             String key = tsc1.getSeriesKey(j)
