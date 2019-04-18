@@ -233,6 +233,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
 
     @Override
     public void process(LsfIndex source) {
+//        System.err.println("Processing");
         this.scIndex = new ScriptableIndex(source, 0);
         this.index = source;
         double step = Math.max(timestep, 0.01);
@@ -257,7 +258,6 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
             }
         }
 //        System.err.println("Forbidden  series: "+Arrays.toString(forbiddenSeries.toArray()));
-//        System.err.println("Hidden  series: "+Arrays.toString(hiddenFiles.toArray()));
         processed = true;
         runScript(scriptPath);
         // No need to iterate over timestep because previous data is already in the scale
@@ -276,6 +276,8 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
                     }
             }
         }
+//        System.err.println("Hidden  series: "+Arrays.toString(hiddenFiles.toArray()));
+        hiddenFiles.clear(); //used to filter custom series
     }
 
     private void addRangeMarker(ValueMarker marker) {
@@ -314,6 +316,7 @@ public class ScriptedPlot extends MRATimeSeriesPlot {
     
     @Override
     public JFreeChart getChart(IMraLogGroup source, double timestep) {
+//        System.err.println("Getting Chart");
         this.timestep = timestep;
         this.index = source.getLsfIndex();
         tsc = new TimeSeriesCollection();
