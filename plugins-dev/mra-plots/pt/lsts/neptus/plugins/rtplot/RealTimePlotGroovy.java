@@ -452,6 +452,7 @@ public class RealTimePlotGroovy extends ConsolePanel implements ConfigurationLis
             catch (Exception e) {
                 traceScript = previousScript;
                 GuiUtils.errorMessage(this, "Error Parsing Script", e.getLocalizedMessage());
+                e.printStackTrace();
             }
         }
     }
