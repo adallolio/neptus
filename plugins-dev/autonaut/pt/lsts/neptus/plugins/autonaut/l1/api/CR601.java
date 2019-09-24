@@ -20,7 +20,9 @@ public class CR601 {
         RUDDER(14),
         THRUST(15),
         L1_STATE(16),
-        FALLBACK_MODE(17);
+        FALLBACK_MODE(17),
+        IRIDIUM_NEXT_SEND(18),
+        IRIDIUM_NEXT_READ(19);
 
         public int v;
 
@@ -29,7 +31,7 @@ public class CR601 {
         }
     }
 
-    final String[] sentenceFields = new String[18];
+    final String[] sentenceFields = new String[20];
 
     public CR601 set(CR601.Field field, String value) {
         sentenceFields[field.v] = value;
@@ -61,6 +63,8 @@ public class CR601 {
                 "applied_rudder: " + sentenceFields[index++] + " " +
                 "applied_thrust: " + sentenceFields[index++] + " " +
                 "l1 state: " + sentenceFields[index++] + " " +
-                "fallback mode:  " + sentenceFields[index++];
+                "fallback mode:  " + sentenceFields[index++] + " " +
+                "next iridium send: " + sentenceFields[index++] + " " +
+                "next iridium read: " + sentenceFields[index++];
     }
 }

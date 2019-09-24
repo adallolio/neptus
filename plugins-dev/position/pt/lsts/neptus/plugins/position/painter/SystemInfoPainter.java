@@ -48,6 +48,10 @@ import pt.lsts.imc.GpsFix;
 import pt.lsts.imc.Heartbeat;
 import pt.lsts.imc.StorageUsage;
 import pt.lsts.imc.Voltage;
+import pt.lsts.imc.Power;
+import pt.lsts.imc.Current;
+import pt.lsts.imc.EstimatedFreq;
+import pt.lsts.imc.PowerSettings;
 import pt.lsts.imc.state.ImcSystemState;
 import pt.lsts.neptus.colormap.ColorMap;
 import pt.lsts.neptus.colormap.ColorMapFactory;
@@ -79,11 +83,11 @@ public class SystemInfoPainter extends ConsoleLayer {
     private static final String GPS_MAN = I18n.textc("MAN", "Manual input.Use a single small word");
     private static final String GPS_SIM = I18n.textc("SIM", "Simulated. Use a single small word");
 
-    private static final int RECT_WIDTH = 248;
-    private static final int RECT_HEIGHT = 70;
+    private static final int RECT_WIDTH = 250;
+    private static final int RECT_HEIGHT = 280;
     private static final int MARGIN = 5;
 
-    private String strCpu, strFuel, strComms, strDisk, strGPS, strGPSFix, strFixedSat;
+    private String strCpu, strFuel, strComms, strDisk, strGPS, strGPSFix, strFixedSat, strPanels, strSysCurr, strSysPow, strThrCurr, strThrPow, strEstFreq, strL2, strL3, strIridium, strModem, strPumps, strVHF, txt_ON, txt_OFF, txtL2, txtL3, txtIridium, txtModem, txtPumps, txtVHF;
 
     @NeptusProperty(name = "Enable")
     public boolean enablePainter = true;
@@ -103,13 +107,16 @@ public class SystemInfoPainter extends ConsoleLayer {
     @NeptusProperty(name = "Entity Name", description = "Vehicle Battery entity name")
     public String batteryEntityName = "Batteries";
 
+    @NeptusProperty(name = "Display Power", description = "Display Power Information from L1")
+    public boolean showPower = false;
+
     private JLabel toDraw;
     private String mainSysName;
 
     private long lastMessageMillis = 0;
 
-    private int cpuUsage = 0, fixQuality = 0, fixedSats = 0;;
-    private double batteryVoltage, current, fixHdop;
+    private int cpuUsage = 0, fixQuality = 0, fixedSats = 0;
+    private double batteryVoltage, current, fixHdop, panelsPower, systemCurrent, systemPower, thrusterCurrent, thrusterPower, estimatedFreq, lev2, lev3, iridium, modem, pumps, vhf;
     private float fuelLevel, confidenceLevel;
     private int storageUsage;
     private GpsFix.TYPE fixType;
@@ -129,6 +136,18 @@ public class SystemInfoPainter extends ConsoleLayer {
         strComms = I18n.textc("Comms", "Use a single small word");
         strGPS = I18n.textc("GPS", "Use a single small word");
         strFixedSat = I18n.textc("Sats", "Short for satellite. Use a single small word");
+        strPanels = I18n.textc("Panels", "Use a single small word");
+        strSysCurr = I18n.textc("System Current", "Use a single small word");
+        strSysPow = I18n.textc("System Power", "Use a single small word");
+        strThrCurr = I18n.textc("Thruster Current", "Use a single small word");
+        strThrPow = I18n.textc("Thruster Power", "Use a single small word");
+        strEstFreq = I18n.textc("Est. Freq", "Use a single small word");
+        strL2 = I18n.textc("Level 2", "Use a single small word");
+        strL3 = I18n.textc("Level 3", "Use a single small word");
+        strIridium = I18n.textc("Iridium(L1)", "Use a single small word");
+        strModem = I18n.textc("4G/LTE Modem", "Use a single small word");
+        strPumps = I18n.textc("Pumps(L1)", "Use a single small word");
+        strVHF = I18n.textc("OWL VHF(L1)", "Use a single small word");
 
         strGPSFix = GPS_NO_FIX;
     }
@@ -162,6 +181,34 @@ public class SystemInfoPainter extends ConsoleLayer {
         if (System.currentTimeMillis() - lastMessageMillis > 10000)
             commsDead = true;
 
+        txt_ON = "ON";
+        txt_OFF = "OFF";
+        if(lev2==0)
+            txtL2 = txt_ON;
+        else
+            txtL2 = txt_OFF;
+        if(lev3==0)
+            txtL3 = txt_ON;
+        else
+            txtL3 = txt_OFF;
+        if(iridium==0)
+            txtIridium = txt_ON;
+        else
+            txtIridium = txt_OFF;
+        if(modem==0)
+            txtModem = txt_ON;
+        else
+            txtModem = txt_OFF;
+        if(pumps==0)
+            txtPumps = txt_ON;
+        else
+            txtPumps = txt_OFF;
+        if(vhf==0)
+            txtVHF = txt_ON;
+        else
+            txtVHF = txt_OFF;
+
+
         // System Info
         if (paintInfo) {
 
@@ -176,7 +223,7 @@ public class SystemInfoPainter extends ConsoleLayer {
                 txt += "@" + (int) (current * 10) / 10f + "A";
             if (showConfidence)
                 txt += ", ~" + (long) MathMiscUtils.round(confidenceLevel, 0) + "%";
-            txt += "</font>)<br/>";
+            txt += "</font>)<br/>";            
             txt += "<b>" + strDisk + ":</b> <font color=" + getColor(storageUsage, false, commsDead) + ">"
                     + storageUsage + "%</font><br/>";
             txt += "<b>" + strComms + ":</b> <font color=" + getColor(lastHbCount * 20, false, commsDead) + ">"
@@ -185,8 +232,27 @@ public class SystemInfoPainter extends ConsoleLayer {
                 txt += " <b>" + strGPS + ":</b> <font color=" + getColor(fixQuality, false, commsDead) + ">"
                         + strGPSFix + "</font>";
                 txt += " (<font color=" + getColor(fixQuality, false, commsDead) + ">"
-                        + fixedSats + "</font> " + strFixedSat + ")";
+                        + fixedSats + "</font> " + strFixedSat;
             }
+            txt += "</font>)<br/>";
+            txt += "<b>" + strPanels + ":</b> <font color=" + getColor(panelsPower, true, commsDead) + ">" + panelsPower
+                    + "W</font><br/>";
+            txt += "<b>" + strSysCurr + ":</b> <font color=" + getColor(systemCurrent, true, commsDead) + ">" + String.format("%.3f",systemCurrent)
+                    + "A</font><br/>";
+            txt += "<b>" + strSysPow + ":</b> <font color=" + getColor(systemPower, true, commsDead) + ">" + String.format("%.3f",systemPower)
+                    + "W</font><br/>";
+            txt += "<b>" + strThrCurr + ":</b> <font color=" + getColor(thrusterCurrent, true, commsDead) + ">" + String.format("%.3f",thrusterCurrent)
+                    + "A</font><br/>";
+            txt += "<b>" + strThrPow + ":</b> <font color=" + getColor(thrusterPower, true, commsDead) + ">" + String.format("%.3f",thrusterPower)
+                    + "W</font><br/>";
+            txt += "<b>" + strEstFreq + ":</b> <font color=" + getColor(estimatedFreq, true, commsDead) + ">" + String.format("%.3f",estimatedFreq)
+                    + "rad/s</font><br/>";
+            txt += "<b>" + strL2 + ":</b> <font color=" + getColor(lev2, true, commsDead) + ">" + txtL2 + "</font><br/>";
+            txt += "<b>" + strL3 + ":</b> <font color=" + getColor(lev3, true, commsDead) + ">" + txtL3 + "</font><br/>";
+            txt += "<b>" + strIridium + ":</b> <font color=" + getColor(iridium, true, commsDead) + ">" + txtIridium +"</font><br/>";
+            txt += "<b>" + strModem + ":</b> <font color=" + getColor(modem, true, commsDead) + ">" + txtModem +"</font><br/>";
+            txt += "<b>" + strPumps + ":</b> <font color=" + getColor(pumps, true, commsDead) + ">" + txtPumps +"</font><br/>";
+            txt += "<b>" + strVHF + ":</b> <font color=" + getColor(vhf, true, commsDead) + ">" + txtVHF +"</font><br/>";
             txt += "<br/>";
             txt += "</html>";
 
@@ -222,6 +288,13 @@ public class SystemInfoPainter extends ConsoleLayer {
     }
 
     @Subscribe
+    public void consume(EstimatedFreq msg) {
+        if (!msg.getSourceName().equals(mainSysName))
+            return;
+        estimatedFreq = msg.getDouble("value");
+    }
+
+    @Subscribe
     public void consume(StorageUsage msg) {
         if (!msg.getSourceName().equals(mainSysName))
             return;
@@ -229,23 +302,59 @@ public class SystemInfoPainter extends ConsoleLayer {
     }
 
     @Subscribe
-    public void consume(Voltage msg) {
+    public void consume(Power msg) {
         if (!msg.getSourceName().equals(mainSysName))
+            return;
+        if (msg.getEntityName().equals("Panels Power"))
+            panelsPower = msg.getValue();
+        else if (msg.getEntityName().equals("System Consumed Power"))
+            systemPower = msg.getValue();
+        else if (msg.getEntityName().equals("Thruster Consumed Power"))
+            thrusterPower = msg.getValue();
+    }
+
+    @Subscribe
+    public void consume(Voltage msg) {
+/*        if (!msg.getSourceName().equals(mainSysName))
             return;
         int id = EntitiesResolver.resolveId(mainSysName, batteryEntityName);
         if (msg.getSrcEnt() != id)
             return;
-        batteryVoltage = msg.getValue();
+*/        batteryVoltage = msg.getValue();
+    }
+
+    @Subscribe
+    public void consume(PowerSettings msg) {
+        if (!msg.getSourceName().equals(mainSysName))
+            return;
+        lev2 = msg.getDouble("l2");
+        lev3 = msg.getDouble("l3");
+        iridium = msg.getDouble("iridium");
+        modem = msg.getDouble("modem");
+        pumps = msg.getDouble("pumps");
+        vhf = msg.getDouble("vhf");
+
+/*        int id = EntitiesResolver.resolveId(mainSysName, batteryEntityName);
+        if (msg.getSrcEnt() != id)
+            return;
+        current = msg.getValue();
+*/
     }
 
     @Subscribe
     public void consume(Current msg) {
         if (!msg.getSourceName().equals(mainSysName))
             return;
-        int id = EntitiesResolver.resolveId(mainSysName, batteryEntityName);
+        if (msg.getEntityName().equals("System Consumed Current"))
+            systemCurrent = msg.getValue();
+        else if (msg.getEntityName().equals("Thruster Consumed Current"))
+            thrusterCurrent = msg.getValue();
+
+/*        int id = EntitiesResolver.resolveId(mainSysName, batteryEntityName);
         if (msg.getSrcEnt() != id)
             return;
         current = msg.getValue();
+*/
     }
 
     @Subscribe

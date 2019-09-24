@@ -91,6 +91,8 @@ public class L1ManualControl extends ConsolePanel {
     private final JLabel ieMsg = new JLabel("Integrated Error: ");
     private final JLabel angleAppMsg = new JLabel("Applied Rudded Angle: ");
     private final JLabel thrustAppMsg = new JLabel("Applied Thrust: ");
+    private final JLabel iridiumSendMsg = new JLabel("Next Iridium Send: ");
+    private final JLabel iridiumReadMsg = new JLabel("Next Iridium Read: ");
 
     private final JButton rudderBigLeftBtn = new JButton();
     private final JButton rudderBigRightBtn = new JButton();
@@ -234,6 +236,10 @@ public class L1ManualControl extends ConsolePanel {
         eMsg.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         ieMsg.setFont(new Font("Arial", Font.PLAIN, 18));
         ieMsg.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        iridiumSendMsg.setFont(new Font("Arial", Font.PLAIN, 18));
+        iridiumSendMsg.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        iridiumReadMsg.setFont(new Font("Arial", Font.PLAIN, 18));
+        iridiumReadMsg.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
 
         monitorPanel.add(loadMsg);
         monitorPanel.add(panelsMsg);
@@ -251,6 +257,8 @@ public class L1ManualControl extends ConsolePanel {
         monitorPanel.add(kiMsg);
         monitorPanel.add(eMsg);
         monitorPanel.add(ieMsg);
+        monitorPanel.add(iridiumSendMsg);
+        monitorPanel.add(iridiumReadMsg);
         this.add(monitorPanel, BorderLayout.CENTER);
 
         gainsPanel.setLayout(new BoxLayout(gainsPanel, BoxLayout.PAGE_AXIS));
@@ -822,7 +830,9 @@ public class L1ManualControl extends ConsolePanel {
                 .set(CR601.Field.RUDDER, parts[15])
                 .set(CR601.Field.THRUST, parts[16])
                 .set(CR601.Field.L1_STATE, parts[17])
-                .set(CR601.Field.FALLBACK_MODE, parts[18]);
+                .set(CR601.Field.FALLBACK_MODE, parts[18])
+                .set(CR601.Field.IRIDIUM_NEXT_SEND, parts[19])
+                .set(CR601.Field.IRIDIUM_NEXT_READ, parts[20]);
 
                 //NeptusLog.pub().info(sentence);
                 //receivedMsg.setText("R: " + String.valueOf(sentence));
@@ -842,6 +852,8 @@ public class L1ManualControl extends ConsolePanel {
                 ieMsg.setText("Integrated Error: " + String.valueOf(parts[14]));
                 angleAppMsg.setText("Applied Rudder Angle: " + Integer.valueOf(parts[15])/10 + " " + "°");
                 thrustAppMsg.setText("Applied Thrust: " + String.valueOf(parts[16]) + " " + "%");
+                iridiumSendMsg.setText("Next Iridium Send: " + String.valueOf(parts[19]) + " " + "s");
+                iridiumReadMsg.setText("Next Iridium Read: " + String.valueOf(parts[20]) + " " + "s");
 
                 //angleMsg.setText("Applied Rudder Angle: " + String.valueOf(parts[BO]) + " " + "°")
             }
