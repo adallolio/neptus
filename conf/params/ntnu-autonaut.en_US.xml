@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2019.02.1 (AutoNaut,8f40a88,dirty)" system="ntnu-autonaut" i18n="en_US">
+<config format="1" version="2019.02.1 (AutoNaut,812a9b8,dirty)" system="ntnu-autonaut" i18n="en_US">
 <section name="Servo Serial" name-i18n="Servo Serial">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Servo Serial</default><units></units><desc>Main entity label</desc></param>
@@ -519,6 +519,38 @@
 <param name="Entity Label - Current 3">
 <name-i18n>Entity Label - Current 3</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Servo Controller 3</default><units></units><desc></desc></param>
 </section>
+<section name="Estimator" name-i18n="Estimator">
+<param name="Entity Label">
+<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Estimator</default><units></units><desc>Main entity label</desc></param>
+<param name="Execution Priority">
+<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
+<param name="Activation Time">
+<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Deactivation Time">
+<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Debug Level">
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<param name="Active">
+<name-i18n>Active</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Determines if output has to be used</desc></param>
+<param name="Amplitude LPF cutoff frequency">
+<name-i18n>Amplitude LPF cutoff frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>Hz</units><desc>Low-pass filter cutoff frequency</desc></param>
+<param name="Omega_f LPF cutoff frequency">
+<name-i18n>Omega_f LPF cutoff frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1.0</default><units>Hz</units><desc>Low-pass filter cutoff frequency</desc></param>
+<param name="LPF taps">
+<name-i18n>LPF taps</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units></units><desc>Low-pass filter(s) number of taps</desc><min>1.0</min></param>
+<param name="Data Sampling Frequency">
+<name-i18n>Data Sampling Frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>100.0</default><units>Hz</units><desc>Heave Acceleration Sampling Frequency</desc></param>
+<param name="Period">
+<name-i18n>Period</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0</default><units>s</units><desc>Estimator Period</desc></param>
+<param name="Estimation Duration">
+<name-i18n>Estimation Duration</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>60.0</default><units>s</units><desc>Estimation Duration</desc></param>
+<param name="Minimum Gain">
+<name-i18n>Minimum Gain</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5.0</default><units></units><desc>Estimator Minimum Gain</desc><min>1.0</min></param>
+<param name="Maximum Gain">
+<name-i18n>Maximum Gain</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>20.0</default><units></units><desc>Estimator Maximum Gain</desc><max>100.0</max></param>
+<param name="Switching Amplitude">
+<name-i18n>Switching Amplitude</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.5</default><units>m</units><desc>Amplitude for Gain Switching</desc></param>
+</section>
 <section name="Navigation" name-i18n="Navigation">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Navigation</default><units></units><desc>Main entity label</desc></param>
@@ -989,7 +1021,7 @@
 <param name="Threads">
 <name-i18n>Threads</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Number of worker threads</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Chlorophyll, CompassHeading, Conductivity, CpuUsage, Current, Depth, Distance, EntityState, EstimatedFreq, Fluorescein, FuelLevel, GpsFix, Heartbeat, LblConfig, LblRange, LblRangeAcceptance, Phycocyanin, Phycoerythrin, Power, PowerChannelState, PowerSettings, Pressure, RhodamineDye, RSSI, Rpm, Salinity, SoundSpeed, StorageUsage, Temperature, Turbidity, Voltage, PH, Redox</default><units></units><desc>List of messages to transport</desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Chlorophyll, CompassHeading, Conductivity, CpuUsage, Current, Depth, Distance, EntityState, EstimatedFreq, Fluorescein, FuelLevel, GpsFix, Heartbeat, LblConfig, LblRange, LblRangeAcceptance, Phycocyanin, Phycoerythrin, Power, PowerChannelState, Pressure, RhodamineDye, RSSI, Rpm, Salinity, SoundSpeed, StorageUsage, Temperature, Turbidity, Voltage, PH, Redox</default><units></units><desc>List of messages to transport</desc></param>
 </section>
 <section name="Log Book" name-i18n="Log Book">
 <param name="Entity Label">
