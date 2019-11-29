@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <console name="Neptus Console" width="1368" height="727" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
-  <!-- Data saved on 2019-10-24T15:10:59.0Z with Neptus version 2019.02.1-dev (compiled on 2019-10-24, gneptus-2019.02.1-dmsmw-77-geace8ba-dirty). -->
+  <!-- Data saved on 2019-11-28T10:30:31.0Z with Neptus version 2019.02.1-dev (compiled on 2019-11-25, gneptus-2019.02.1-dmsmw-78-g766f2b2-dirty). -->
   <mainpanel name="console main panel">
     <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1368" height="671">
       <properties>

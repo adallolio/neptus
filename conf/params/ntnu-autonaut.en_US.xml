@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2019.02.1 (AutoNaut-CAS,6dfa0cb,dirty)" system="ntnu-autonaut" i18n="en_US">
+<config format="1" version="2019.02.1 (AutoNaut-CAS,68a5337,dirty)" system="ntnu-autonaut" i18n="en_US">
 <section name="Text Message Parser" name-i18n="Text Message Parser">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Text Message Parser</default><units></units><desc>Main entity label</desc></param>
@@ -683,27 +683,23 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Trace</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Execution Frequency">
 <name-i18n>Execution Frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1</default><units>Hz</units><desc>Frequency at which task is executed</desc></param>
 <param name="Report Ground Velocity">
-<name-i18n>Report Ground Velocity</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Activate output of Ground Velocity messages</desc></param>
+<name-i18n>Report Ground Velocity</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Activate output of Ground Velocity messages</desc></param>
 <param name="Report Yaw">
-<name-i18n>Report Yaw</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Activate output of Euler Angles messages</desc></param>
+<name-i18n>Report Yaw</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Activate output of Euler Angles messages</desc></param>
 <param name="Activation Depth">
-<name-i18n>Activation Depth</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1</default><units>m</units><desc>Minimum depth at which the GPS is unable to produce accurate fixes</desc><min>0.0</min><max>1.0</max></param>
+<name-i18n>Activation Depth</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.2</default><units>m</units><desc>Minimum depth at which the GPS is unable to produce accurate fixes</desc><min>0.0</min><max>1.0</max></param>
 <param name="HDOP">
 <name-i18n>HDOP</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.9</default><units></units><desc>Horizontal Dilution of Position index</desc><min>0.0</min></param>
 <param name="HACC">
 <name-i18n>HACC</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>2</default><units></units><desc>Horizontal Accuracy index</desc><min>0.0</min></param>
 <param name="Number of Satellites">
-<name-i18n>Number of Satellites</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>9</default><units></units><desc>Number of available satellites</desc></param>
+<name-i18n>Number of Satellites</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>8</default><units></units><desc>Number of available satellites</desc></param>
 <param name="Initial Position">
-<name-i18n>Initial Position</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>72.44113, 10.35459</default><units>°</units><desc>Initial position of the vehicle</desc><size>2</size></param>
-<param name="Initial COG">
-<name-i18n>Initial COG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0</default><units>°</units><desc>Initial COG of the vehicle in deg</desc><min>-180</min><max>180</max><size>1</size></param>
-<param name="Initial SOG">
-<name-i18n>Initial SOG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0</default><units>m/s</units><desc>Initial SOG of the vehicle in m/s</desc><size>1</size></param>
+<name-i18n>Initial Position</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>62.44113, 10.35459</default><units>°</units><desc>Initial position of the vehicle</desc><size>2</size></param>
 </section>
 <section name="IMU" name-i18n="IMU">
 <param name="Entity Label">
@@ -829,7 +825,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Execution Frequency">
 <name-i18n>Execution Frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>100</default><units>Hz</units><desc>Frequency at which task is executed</desc></param>
 <param name="Time Multiplier">
@@ -996,32 +992,6 @@
 <name-i18n>Threads</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Number of worker threads</desc></param>
 <param name="Transports">
 <name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Chlorophyll, CompassHeading, Conductivity, CpuUsage, Current, Depth, Distance, EntityState, EstimatedFreq, Fluorescein, FuelLevel, GpsFix, Heartbeat, LblConfig, LblRange, LblRangeAcceptance, Phycocyanin, Phycoerythrin, Power, PowerChannelState, Pressure, RhodamineDye, RSSI, Rpm, Salinity, SoundSpeed, StorageUsage, Temperature, Turbidity, Voltage, PH, Redox</default><units></units><desc>List of messages to transport</desc></param>
-</section>
-<section name="Iridium Transport" name-i18n="Iridium Transport">
-<param name="Entity Label">
-<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Iridium Transport</default><units></units><desc>Main entity label</desc></param>
-<param name="Execution Priority">
-<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
-<param name="Activation Time">
-<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Deactivation Time">
-<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
-<param name="Active - Scope">
-<name-i18n>Active - Scope</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>global</default><units></units><desc>Scoped of the &apos;Active&apos; parameter</desc></param>
-<param name="Active - Visibility">
-<name-i18n>Active - Visibility</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>user</default><units></units><desc>Visibility of the &apos;Active&apos; parameter</desc></param>
-<param name="Active">
-<name-i18n>Active</name-i18n><type>boolean</type><visibility>user</visibility><scope>global</scope><default>true</default><units></units><desc>True to activate task, false otherwise</desc></param>
-<param name="Device updates - Periodicity">
-<name-i18n>Device updates - Periodicity</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>600</default><units>s</units><desc>Delay between announce update messages. 0 for no updates being sent.</desc></param>
-<param name="Announce Periodicity">
-<name-i18n>Announce Periodicity</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>s</units><desc>Delay between announce messages being sent. 0 for no updates being sent.</desc></param>
-<param name="Maximum age">
-<name-i18n>Maximum age</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>1200</default><units>s</units><desc>Age, in seconds, after which received IMC messages are discarded.</desc></param>
-<param name="Iridium Text Origin">
-<name-i18n>Iridium Text Origin</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>iridium</default><units></units><desc>Text messages received via Iridium will be tagged with this origin</desc></param>
 </section>
 <section name="Log Book" name-i18n="Log Book">
 <param name="Entity Label">
