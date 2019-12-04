@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2019.02.1 (AutoNaut-CAS,6dfa0cb,dirty)" system="asv-obstacle-1" i18n="en_US">
+<config format="1" version="2019.02.1 (AutoNaut-CAS,291cf97,dirty)" system="asv-obstacle-1" i18n="en_US">
 <section name="Heading Controller" name-i18n="Heading Controller">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Heading Controller</default><units></units><desc>Main entity label</desc></param>
@@ -523,15 +523,15 @@
 <param name="Callsign">
 <name-i18n>Callsign</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>asv1-callsign</default><units></units><desc>Vessel VHF Radio Callsign</desc></param>
 <param name="Type and Cargo">
-<name-i18n>Type and Cargo</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>101</default><units></units><desc>Vessel Type and Cargo</desc></param>
+<name-i18n>Type and Cargo</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>101</default><units></units><desc>Vessel Type and Cargo</desc></param>
 <param name="Size A">
-<name-i18n>Size A</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units>m</units><desc>Length to stern from the located AIS </desc><min>0</min><max>50</max></param>
+<name-i18n>Size A</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>20</default><units></units><desc>Length to stern from the located AIS [m]</desc></param>
 <param name="Size B">
-<name-i18n>Size B</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units>m</units><desc>Length to bow from the located AIS </desc><min>0</min><max>500</max></param>
+<name-i18n>Size B</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Length to bow from the located AIS [m]</desc></param>
 <param name="Size C">
-<name-i18n>Size C</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units>m</units><desc>Length to port from the located AIS </desc><min>0</min><max>20</max></param>
+<name-i18n>Size C</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Length to port from the located AIS [m]</desc></param>
 <param name="Size D">
-<name-i18n>Size D</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units>m</units><desc>Length to starboard from the located AIS </desc><min>0</min><max>20</max></param>
+<name-i18n>Size D</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Length to starboard from the located AIS [m]</desc></param>
 </section>
 <section name="Environment" name-i18n="Environment">
 <param name="Entity Label">
@@ -611,27 +611,27 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Trace</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Execution Frequency">
 <name-i18n>Execution Frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1</default><units>Hz</units><desc>Frequency at which task is executed</desc></param>
 <param name="Report Ground Velocity">
-<name-i18n>Report Ground Velocity</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Activate output of Ground Velocity messages</desc></param>
+<name-i18n>Report Ground Velocity</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Activate output of Ground Velocity messages</desc></param>
 <param name="Report Yaw">
-<name-i18n>Report Yaw</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Activate output of Euler Angles messages</desc></param>
+<name-i18n>Report Yaw</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Activate output of Euler Angles messages</desc></param>
 <param name="Activation Depth">
-<name-i18n>Activation Depth</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1</default><units>m</units><desc>Minimum depth at which the GPS is unable to produce accurate fixes</desc><min>0.0</min><max>1.0</max></param>
+<name-i18n>Activation Depth</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.2</default><units>m</units><desc>Minimum depth at which the GPS is unable to produce accurate fixes</desc><min>0.0</min><max>1.0</max></param>
 <param name="HDOP">
 <name-i18n>HDOP</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.9</default><units></units><desc>Horizontal Dilution of Position index</desc><min>0.0</min></param>
 <param name="HACC">
 <name-i18n>HACC</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>2</default><units></units><desc>Horizontal Accuracy index</desc><min>0.0</min></param>
 <param name="Number of Satellites">
-<name-i18n>Number of Satellites</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>9</default><units></units><desc>Number of available satellites</desc></param>
+<name-i18n>Number of Satellites</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>8</default><units></units><desc>Number of available satellites</desc></param>
 <param name="Initial Position">
-<name-i18n>Initial Position</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>74.44113, 10.35459</default><units>°</units><desc>Initial position of the vehicle</desc><size>2</size></param>
+<name-i18n>Initial Position</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>63.351500, 10.089000</default><units>°</units><desc>Initial position of the vehicle</desc><size>2</size></param>
 <param name="Initial COG">
-<name-i18n>Initial COG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1</default><units>°</units><desc>Initial COG of the vehicle in deg</desc><min>-180</min><max>180</max><size>1</size></param>
+<name-i18n>Initial COG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>270.0</default><units>°</units><desc>Initial COG of the vehicle in deg</desc><min>0.0</min><max>360.0</max></param>
 <param name="Initial SOG">
-<name-i18n>Initial SOG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.4</default><units>m/s</units><desc>Initial SOG of the vehicle in m/s</desc><size>1</size></param>
+<name-i18n>Initial SOG</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0</default><units>m/s</units><desc>Initial SOG of the vehicle in m/s</desc></param>
 </section>
 <section name="Motor" name-i18n="Motor">
 <param name="Entity Label">
