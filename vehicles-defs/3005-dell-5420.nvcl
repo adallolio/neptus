@@ -57,11 +57,11 @@
       <latency value="100M" unit="bps"/>
       <protocols-args>
         <imc>
-          <port>6002</port>
-          <port-tcp>6002</port-tcp>
+          <port>6015</port>
+          <port-tcp>6015</port-tcp>
           <udp-on>true</udp-on>
           <tcp-on>false</tcp-on>
-          <imc-id>AA:02</imc-id>
+          <imc-id>88:05</imc-id>
         </imc>
       </protocols-args>
     </comm-mean>

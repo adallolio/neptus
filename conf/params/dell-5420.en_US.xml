@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2019.02.1 (AutoNaut-CAS,6dfa0cb,dirty)" system="dell-5420" i18n="en_US">
+<config format="1" version="2019.02.1 (AutoNaut-CAS,8bcaa61,dirty)" system="dell-5420" i18n="en_US">
 <section name="Entity Monitor" name-i18n="Entity Monitor">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Entity Monitor</default><units></units><desc>Main entity label</desc></param>
@@ -211,15 +211,15 @@
 <param name="Callsign">
 <name-i18n>Callsign</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>dell-pc-callsign</default><units></units><desc>Vessel VHF Radio Callsign</desc></param>
 <param name="Type and Cargo">
-<name-i18n>Type and Cargo</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>104</default><units></units><desc>Vessel Type and Cargo</desc></param>
+<name-i18n>Type and Cargo</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>104</default><units></units><desc>Vessel Type and Cargo</desc></param>
 <param name="Size A">
-<name-i18n>Size A</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units>m</units><desc>Length to stern from the located AIS </desc><min>0</min><max>50</max></param>
+<name-i18n>Size A</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Length to stern from the located AIS [m]</desc></param>
 <param name="Size B">
-<name-i18n>Size B</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units>m</units><desc>Length to bow from the located AIS </desc><min>0</min><max>500</max></param>
+<name-i18n>Size B</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Length to bow from the located AIS [m]</desc></param>
 <param name="Size C">
-<name-i18n>Size C</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units>m</units><desc>Length to port from the located AIS </desc><min>0</min><max>20</max></param>
+<name-i18n>Size C</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Length to port from the located AIS [m]</desc></param>
 <param name="Size D">
-<name-i18n>Size D</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units>m</units><desc>Length to starboard from the located AIS </desc><min>0</min><max>20</max></param>
+<name-i18n>Size D</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Length to starboard from the located AIS [m]</desc></param>
 </section>
 <section name="Report Supervisor" name-i18n="Report Supervisor">
 <param name="Entity Label">
@@ -407,7 +407,7 @@
 <param name="LSF Volume Directories">
 <name-i18n>LSF Volume Directories</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc></desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AisStaticInfo, EntityList, AngularVelocity, Announce, CompassHeading, Conductivity, ControlLoops, ControlParcel, CpuUsage, Current, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, PathControlState, PeekDesiredPath, PeekManeuver, PlanSpecification, PlanControl, PlanControlState, PlanDB, PathControlState, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StopManeuver, Teleoperation, TeleoperationDone, Temperature, TransmissionRequest, TransmissionStatus, VehicleCommand, VehicleMedium, VehicleState, VehicleState, VesselWind, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AcousticBackscatter, AisStaticInfo, EntityList, AngularVelocity, Announce, CompassHeading, Conductivity, ControlLoops, ControlParcel, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, PathControlState, PeekDesiredPath, PeekManeuver, PlanSpecification, PlanControl, PlanControlState, PlanDB, PathControlState, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StopManeuver, Teleoperation, TeleoperationDone, Temperature, TransmissionRequest, TransmissionStatus, VehicleCommand, VehicleMedium, VehicleState, VehicleState, VesselWind, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
 </section>
 <section name="UDP" name-i18n="UDP">
 <param name="Entity Label">
@@ -421,7 +421,7 @@
 <param name="Debug Level">
 <name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Local Port">
-<name-i18n>Local Port</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>6002</default><units></units><desc>Local UDP port to listen on</desc></param>
+<name-i18n>Local Port</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>6015</default><units></units><desc>Local UDP port to listen on</desc></param>
 <param name="Contact Timeout">
 <name-i18n>Contact Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30</default><units>s</units><desc></desc></param>
 <param name="Contact Refresh Periodicity">
@@ -443,7 +443,7 @@
 <param name="Underwater Communications">
 <name-i18n>Underwater Communications</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Allow underwater communication when limited comms are being simulated</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AngularVelocity, AisStaticInfo, AlignmentState, CompassHeading, CpuUsage, Current, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, GpsFix, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, RSSI, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StorageUsage, Teleoperation, TeleoperationDone, TransmissionRequest, TransmissionStatus, TrexObservation, TrexOperation, TrexToken, TrexPlan, VehicleMedium, VehicleState, VesselWind, Voltage</default><units></units><desc>List of messages to transport</desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AcousticBackscatter, AngularVelocity, AisStaticInfo, AlignmentState, CompassHeading, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, GpsFix, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, RSSI, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StorageUsage, Teleoperation, TeleoperationDone, TransmissionRequest, TransmissionStatus, TrexObservation, TrexOperation, TrexToken, TrexPlan, VehicleMedium, VehicleState, VesselWind, Voltage</default><units></units><desc>List of messages to transport</desc></param>
 <param name="Always Transmitted Messages">
 <name-i18n>Always Transmitted Messages</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, SimulatedState</default><units></units><desc>List of messages that will always be transmitted disregarding communication limitations</desc></param>
 <param name="Dynamic Nodes">
