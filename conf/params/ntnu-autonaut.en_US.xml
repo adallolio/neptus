@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2019.02.1 (AutoNaut-CAS,291cf97,dirty)" system="ntnu-autonaut" i18n="en_US">
+<config format="1" version="2019.02.1 (AutoNaut-CAS,8bcaa61,dirty)" system="ntnu-autonaut" i18n="en_US">
 <section name="Servo Serial" name-i18n="Servo Serial">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Servo Serial</default><units></units><desc>Main entity label</desc></param>
@@ -227,9 +227,9 @@
 <param name="COLREGS Distance">
 <name-i18n>COLREGS Distance</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>500.0</default><units>m</units><desc>Distance where COLREGS are applied [m].</desc><min>300.0</min><max>2000.0</max></param>
 <param name="SB_MPC Surveillance Range">
-<name-i18n>SB_MPC Surveillance Range</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>500.0</default><units>m</units><desc>Maximum SB_MPC Surveillance Range.</desc><min>300.0</min><max>2000.0</max></param>
+<name-i18n>SB_MPC Surveillance Range</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>700.0</default><units>m</units><desc>Maximum SB_MPC Surveillance Range.</desc><min>300.0</min><max>2000.0</max></param>
 <param name="Minimal Safe Distance">
-<name-i18n>Minimal Safe Distance</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>150.0</default><units>m</units><desc>Minimal distance which is considered as safe [m].</desc><min>50.0</min><max>500.0</max></param>
+<name-i18n>Minimal Safe Distance</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>300.0</default><units>m</units><desc>Minimal distance which is considered as safe [m].</desc><min>50.0</min><max>500.0</max></param>
 <param name="Cost of Collisions">
 <name-i18n>Cost of Collisions</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1.0</default><units></units><desc>Cost of Collision.</desc><min>0.0</min><max>1.0</max></param>
 <param name="Cost of not complying COLREGS">
@@ -639,22 +639,6 @@
 <param name="Generate At Boot">
 <name-i18n>Generate At Boot</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>Set of commands for plans to generate at boot</desc></param>
 </section>
-<section name="AIS" name-i18n="AIS">
-<param name="Entity Label">
-<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>AIS</default><units></units><desc>Main entity label</desc></param>
-<param name="Execution Priority">
-<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
-<param name="Activation Time">
-<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Deactivation Time">
-<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
-<param name="Serial Port - Device">
-<name-i18n>Serial Port - Device</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>/dev/ttyUSB1</default><units></units><desc>Serial port device used to communicate with the sensor</desc></param>
-<param name="Serial Port - Baud Rate">
-<name-i18n>Serial Port - Baud Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>38400</default><units></units><desc>Serial port baud rate</desc></param>
-</section>
 <section name="Weather Station" name-i18n="Weather Station">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Weather Station</default><units></units><desc>Main entity label</desc></param>
@@ -1005,7 +989,7 @@
 <param name="Acoustic Address Section">
 <name-i18n>Acoustic Address Section</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Evologics Addresses</default><units></units><desc>Name of the configuration section with acoustic modem addresses</desc></param>
 <param name="Iridium Reports Period">
-<name-i18n>Iridium Reports Period</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>600</default><units></units><desc>Period, in seconds, between transmission of states via Iridium. Value of 0 disables transmission.</desc></param>
+<name-i18n>Iridium Reports Period</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>300</default><units></units><desc>Period, in seconds, between transmission of states via Iridium. Value of 0 disables transmission.</desc></param>
 <param name="Process AcousticOperation Messages">
 <name-i18n>Process AcousticOperation Messages</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Enable CommManager to process and convert legacy message -&gt; AcousticOperation</desc></param>
 <param name="Send Iridium plain texts">
@@ -1077,33 +1061,7 @@
 <param name="Threads">
 <name-i18n>Threads</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>5</default><units></units><desc>Number of worker threads</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Chlorophyll, CompassHeading, Conductivity, CpuUsage, Current, Depth, Distance, EntityState, EstimatedFreq, Fluorescein, FuelLevel, GpsFix, Heartbeat, LblConfig, LblRange, LblRangeAcceptance, Phycocyanin, Phycoerythrin, Power, PowerChannelState, Pressure, RhodamineDye, RSSI, Rpm, Salinity, SoundSpeed, StorageUsage, Temperature, Turbidity, Voltage, PH, Redox</default><units></units><desc>List of messages to transport</desc></param>
-</section>
-<section name="Iridium Modem" name-i18n="Iridium Modem">
-<param name="Entity Label">
-<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Iridium Modem</default><units></units><desc>Main entity label</desc></param>
-<param name="Execution Priority">
-<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
-<param name="Activation Time">
-<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Deactivation Time">
-<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
-<param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Debug</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
-<param name="Active - Scope">
-<name-i18n>Active - Scope</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>global</default><units></units><desc>Scoped of the &apos;Active&apos; parameter</desc></param>
-<param name="Active - Visibility">
-<name-i18n>Active - Visibility</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>user</default><units></units><desc>Visibility of the &apos;Active&apos; parameter</desc></param>
-<param name="Active">
-<name-i18n>Active</name-i18n><type>boolean</type><visibility>user</visibility><scope>global</scope><default>true</default><units></units><desc>True to activate task, false otherwise</desc></param>
-<param name="Serial Port - Device">
-<name-i18n>Serial Port - Device</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>/dev/ttyO4</default><units></units><desc>Serial port device used to communicate with the modem</desc></param>
-<param name="Serial Port - Baud Rate">
-<name-i18n>Serial Port - Baud Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>19200</default><units></units><desc>Serial port baud rate</desc></param>
-<param name="Mailbox Check - Periodicity">
-<name-i18n>Mailbox Check - Periodicity</name-i18n><type>real</type><visibility>user</visibility><scope>global</scope><default>1800</default><units>s</units><desc>Amount of time without alert rings or MT SBDs before doing a mailbox check</desc></param>
-<param name="Maximum Transmission Rate">
-<name-i18n>Maximum Transmission Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>s</units><desc></desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Chlorophyll, CompassHeading, Conductivity, CpuUsage, Current, Depth, Distance, EntityState, EstimatedFreq, Fluorescein, FuelLevel, GpsFix, Heartbeat, LblConfig, LblRange, LblRangeAcceptance, Phycocyanin, Phycoerythrin, Power, PowerSettings, PowerChannelState, Pressure, RelativeWind, RhodamineDye, RSSI, Rpm, Salinity, SoundSpeed, StorageUsage, Temperature, Turbidity, VesselWind, Voltage, PH, Redox</default><units></units><desc>List of messages to transport</desc></param>
 </section>
 <section name="Log Book" name-i18n="Log Book">
 <param name="Entity Label">
@@ -1137,7 +1095,7 @@
 <param name="LSF Volume Directories">
 <name-i18n>LSF Volume Directories</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc></desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AcousticBackscatter, AisStaticInfo, EntityList, AngularVelocity, Announce, CompassHeading, Conductivity, ControlLoops, ControlParcel, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, PathControlState, PeekDesiredPath, PeekManeuver, PlanSpecification, PlanControl, PlanControlState, PlanDB, PathControlState, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StopManeuver, Teleoperation, TeleoperationDone, Temperature, TransmissionRequest, TransmissionStatus, VehicleCommand, VehicleMedium, VehicleState, VehicleState, VesselWind, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AcousticBackscatter, AisStaticInfo, EntityList, AngularVelocity, Announce, CollisionAvoidance, CompassHeading, Conductivity, ControlLoops, ControlParcel, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, PathControlState, PeekDesiredPath, PeekManeuver, PlanSpecification, PlanControl, PlanControlState, PlanDB, PathControlState, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StopManeuver, Teleoperation, TeleoperationDone, Temperature, TransmissionRequest, TransmissionStatus, VehicleCommand, VehicleMedium, VehicleState, VehicleState, VesselWind, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
 </section>
 <section name="UDP" name-i18n="UDP">
 <param name="Entity Label">
@@ -1173,9 +1131,53 @@
 <param name="Underwater Communications">
 <name-i18n>Underwater Communications</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Allow underwater communication when limited comms are being simulated</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AcousticBackscatter, AngularVelocity, AisStaticInfo, AlignmentState, CompassHeading, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, GpsFix, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, RSSI, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StorageUsage, Teleoperation, TeleoperationDone, TransmissionRequest, TransmissionStatus, TrexObservation, TrexOperation, TrexToken, TrexPlan, VehicleMedium, VehicleState, VesselWind, Voltage</default><units></units><desc>List of messages to transport</desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AcousticBackscatter, AngularVelocity, AisStaticInfo, AlignmentState, CollisionAvoidance, CompassHeading, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, GpsFix, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, RelativeWind, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, RSSI, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, StorageUsage, Teleoperation, TeleoperationDone, TransmissionRequest, TransmissionStatus, TrexObservation, TrexOperation, TrexToken, TrexPlan, VehicleMedium, VehicleState, VesselWind, Voltage</default><units></units><desc>List of messages to transport</desc></param>
 <param name="Always Transmitted Messages">
 <name-i18n>Always Transmitted Messages</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, SimulatedState</default><units></units><desc>List of messages that will always be transmitted disregarding communication limitations</desc></param>
+<param name="Dynamic Nodes">
+<name-i18n>Dynamic Nodes</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Allow use of dynamic nodes.</desc></param>
+<param name="Local Messages Only">
+<name-i18n>Local Messages Only</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Only transmit messsages from local system.</desc></param>
+<param name="Custom Service Type">
+<name-i18n>Custom Service Type</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>Optional custom service type (imc+udp+&lt;Custom Service Type&gt;), empty entry gives default service (imc+udp)</desc></param>
+</section>
+<section name="State Estimation" name-i18n="State Estimation">
+<param name="Entity Label">
+<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>State Estimation</default><units></units><desc>Main entity label</desc></param>
+<param name="Execution Priority">
+<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
+<param name="Activation Time">
+<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Deactivation Time">
+<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Debug Level">
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<param name="Local Port">
+<name-i18n>Local Port</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>6015</default><units></units><desc>Local UDP port to listen on</desc></param>
+<param name="Contact Timeout">
+<name-i18n>Contact Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30</default><units>s</units><desc></desc></param>
+<param name="Contact Refresh Periodicity">
+<name-i18n>Contact Refresh Periodicity</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5.0</default><units>s</units><desc></desc></param>
+<param name="Print Outgoing Messages">
+<name-i18n>Print Outgoing Messages</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Print outgoing messages (Debug)</desc></param>
+<param name="Print Incoming Messages">
+<name-i18n>Print Incoming Messages</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Print incoming messages (Debug)</desc></param>
+<param name="Static Destinations">
+<name-i18n>Static Destinations</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>192.168.88.200:6016</default><units></units><desc>List of &lt;IPv4&gt;:&lt;Port&gt; destinations that will always receive outgoing messages</desc></param>
+<param name="Rate Limiters">
+<name-i18n>Rate Limiters</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>EstimatedState:2</default><units></units><desc>List of &lt;Message&gt;:&lt;Frequency&gt;</desc></param>
+<param name="Filtered Entities">
+<name-i18n>Filtered Entities</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>List of &lt;Message&gt;:&lt;Entity&gt;+&lt;Entity&gt; that define the source entities allowed to pass message of a specific message type.</desc></param>
+<param name="Announce Service">
+<name-i18n>Announce Service</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Announce this transport to services or not</desc></param>
+<param name="Communication Range">
+<name-i18n>Communication Range</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>m</units><desc>Communication range (0 for infinite)</desc></param>
+<param name="Underwater Communications">
+<name-i18n>Underwater Communications</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Allow underwater communication when limited comms are being simulated</desc></param>
+<param name="Transports">
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>EstimatedState</default><units></units><desc>List of messages to transport</desc></param>
+<param name="Always Transmitted Messages">
+<name-i18n>Always Transmitted Messages</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>List of messages that will always be transmitted disregarding communication limitations</desc></param>
 <param name="Dynamic Nodes">
 <name-i18n>Dynamic Nodes</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Allow use of dynamic nodes.</desc></param>
 <param name="Local Messages Only">

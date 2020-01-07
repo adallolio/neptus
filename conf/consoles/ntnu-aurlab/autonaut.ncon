@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<console name="Neptus Console" width="1368" height="727" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
-  <!-- Data saved on 2019-11-28T10:30:31.0Z with Neptus version 2019.02.1-dev (compiled on 2019-11-25, gneptus-2019.02.1-dmsmw-78-g766f2b2-dirty). -->
+<console name="Neptus Console" width="1855" height="1056" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
+  <!-- Data saved on 2020-01-05T13:11:55.0Z with Neptus version 2019.02.1-dev (compiled on 2019-12-19, gneptus-2019.02.1-dmsmw-81-g0e031b4-dirty). -->
   <mainpanel name="console main panel">
-    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1368" height="671">
+    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1855" height="1000">
       <properties>
         <entry key="XML Definitions">
 &lt;profiles&gt;
@@ -88,10 +88,10 @@
       <child class="pt.lsts.neptus.plugins.map.MapEditor" x="0" y="0" width="0" height="0">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="1062" height="671">
+      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="1549" height="1000">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="503">
+      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="832">
         <properties/>
       </child>
       <child class="pt.lsts.neptus.console.plugins.planning.MultiVehiclePlanOverlay" x="0" y="0" width="0" height="0">
@@ -125,7 +125,7 @@
           <entry key="Traces Script">des_h: ${DesiredHeading.value}*180/Math.PI;
 %h: ${EstimatedState.psi}*180/Math.PI;
 course: Math.atan2(${EstimatedState.vy},${EstimatedState.vx})*180/Math.PI;
-</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="220" height="250">        <properties>          <entry key="Enable Selection">false</entry>
+</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="300" height="600">        <properties>          <entry key="Enable Selection">false</entry>
         </properties>
       </child>
       <child class="pt.lsts.neptus.plugins.txtcmd.TextCommands" x="0" y="0" width="0" height="0">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2017.01.0 (L3,0d2c480,dirty)" system="ntnu-autonaut-L3" i18n="en_US">
+<config format="1" version="2017.01.0 (L3,86abca1,dirty)" system="ntnu-autonaut-L3" i18n="en_US">
 <section name="Text Message Parser" name-i18n="Text Message Parser">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Text Message Parser</default><units></units><desc>Main entity label</desc></param>
@@ -137,6 +137,42 @@
 <param name="Generate At Boot">
 <name-i18n>Generate At Boot</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>Set of commands for plans to generate at boot</desc></param>
 </section>
+<section name="CTD" name-i18n="CTD">
+<param name="Entity Label">
+<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>CTD</default><units></units><desc>Main entity label</desc></param>
+<param name="Execution Priority">
+<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
+<param name="Activation Time">
+<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Deactivation Time">
+<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Debug Level">
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Trace</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<param name="Activate Sensor">
+<name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>global</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc><min>0</min><max>1</max></param>
+<param name="Serial Port - Device">
+<name-i18n>Serial Port - Device</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>/dev/ttyMAX2</default><units></units><desc>Serial port device used to communicate with the sensor</desc></param>
+<param name="Serial Port - Baud Rate">
+<name-i18n>Serial Port - Baud Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>9600</default><units></units><desc>Serial port baud rate</desc><values>1200, 2400, 4800, 9600, 19200, 38400</values><values-i18n>1200, 2400, 4800, 9600, 19200, 38400</values-i18n></param>
+<param name="Number of Samples to Average">
+<name-i18n>Number of Samples to Average</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>8</default><units></units><desc>Number of samples to average and output data</desc><min>1</min><max>255</max></param>
+<param name="Zero Conductivity Frequency">
+<name-i18n>Zero Conductivity Frequency</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>2780</default><units>Hz</units><desc>Minimum conductivity frequency (Hz) to enable pump turn-on, to prevent pump from turning on before FastCAT is in water. Pump stops when frequency drops below value. FastCAT Configuration Sheet in manual lists uncorrected (raw) frequency output at 0 conductivity. Typical value (factory-set) for salt water and estuarine application is:     (0 conductivity frequency + 500 Hz). Typical value for fresh water applications is:     (0 conductivity frequency + 5 Hz)</desc></param>
+<param name="Minimum Conductivity Frequency">
+<name-i18n>Minimum Conductivity Frequency</name-i18n><type>real</type><visibility>user</visibility><scope>global</scope><default>500</default><units>Hz</units><desc>Minimum conductivity frequency (Hz) to enable pump turn-on, to prevent pump from turning on before FastCAT is in water. Pump stops when frequency drops below value. FastCAT Configuration Sheet in manual lists uncorrected (raw) frequency output at 0 conductivity. Typical value (factory-set) for salt water and estuarine application is:     (0 conductivity frequency + 500 Hz). Typical value for fresh water applications is:     (0 conductivity frequency + 5 Hz)</desc><min>0.0</min></param>
+<param name="Pump Delay">
+<name-i18n>Pump Delay</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30.0</default><units>s</units><desc>Time to wait after minimum conductivity frequency is reached before turning pump on. Pump delay time allows time for tubing and pump to fill with water after FastCAT is submerged.</desc></param>
+<param name="Process In Real-Time">
+<name-i18n>Process In Real-Time</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Apply alignment, filtering, and conductivity cell thermal mass corrections to real-time data.</desc></param>
+<param name="Time to Advance Temperature">
+<name-i18n>Time to Advance Temperature</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0625</default><units>s</units><desc>Time to advance temperature data relative to conductivity and pressure data.</desc><min>0.0</min><max>0.125</max></param>
+<param name="Conductivity Alpha Correction">
+<name-i18n>Conductivity Alpha Correction</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.03</default><units></units><desc>Conductivity cell thermal mass alpha correction.</desc><min>0.02</min><max>0.05</max></param>
+<param name="Conductivity Tau Correction">
+<name-i18n>Conductivity Tau Correction</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>7.0</default><units></units><desc>Conductivity cell thermal mass tau correction.</desc><min>5.0</min><max>10.0</max></param>
+<param name="Power Channel">
+<name-i18n>Power Channel</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>CTD</default><units></units><desc>Name of device&apos;s power channel</desc></param>
+</section>
 <section name="EcoPuck" name-i18n="EcoPuck">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>EcoPuck</default><units></units><desc>Main entity label</desc></param>
@@ -168,6 +204,64 @@
 <name-i18n>Scattering -- Dark Counts</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>44</default><units></units><desc>Signal output of the meter in clean water with black tape over detector</desc></param>
 <param name="Scattering -- Scale Factor">
 <name-i18n>Scattering -- Scale Factor</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1.824e-6</default><units></units><desc>Scale factor is used to derive instrument output concentration from the raw signal output of the fluorometer</desc></param>
+</section>
+<section name="ADCP" name-i18n="ADCP">
+<param name="Entity Label">
+<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>ADCP</default><units></units><desc>Main entity label</desc></param>
+<param name="Execution Priority">
+<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
+<param name="Activation Time">
+<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Deactivation Time">
+<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Debug Level">
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<param name="Activate Sensor">
+<name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>true</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
+<param name="IO Port - Device">
+<name-i18n>IO Port - Device</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>tcp://192.168.100.240:9000</default><units></units><desc>IO device used to communicate with the sensor</desc></param>
+<param name="Serial Port - Baud Rate">
+<name-i18n>Serial Port - Baud Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>115200</default><units></units><desc>Serial port baud rate</desc></param>
+<param name="Device Position">
+<name-i18n>Device Position</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>0.50, 0, 0.20</default><units>m</units><desc>Device position relative to navigation estimation (relative to GPS sensor)</desc><size>3</size></param>
+<param name="Device Orientation">
+<name-i18n>Device Orientation</name-i18n><type>list:real</type><visibility>developer</visibility><scope>global</scope><default>0, -90, 45</default><units>°</units><desc>Device orientation</desc><size>3</size></param>
+<param name="Averaging Interval">
+<name-i18n>Averaging Interval</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>600</default><units>s</units><desc>Averaging interval for ADCP measurements</desc><min>1</min><max>21600</max></param>
+<param name="Averaging Enable">
+<name-i18n>Averaging Enable</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>1</default><units></units><desc>Enable/Disable ADCP mesaurement averaging</desc><min>0</min><max>1</max></param>
+<param name="Vertical Direction">
+<name-i18n>Vertical Direction</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc>Vertical direction</desc><min>0</min><max>2</max></param>
+<param name="Burst Measurement Enable">
+<name-i18n>Burst Measurement Enable</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc>Enable/Disable burst measurements</desc><min>0</min><max>1</max></param>
+<param name="Burst Interval">
+<name-i18n>Burst Interval</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>120</default><units>s</units><desc>Burst interval (s)</desc><min>1</min><max>212600</max></param>
+<param name="Depth Interval">
+<name-i18n>Depth Interval</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>m</units><desc>Depth interval (m)</desc></param>
+<param name="Sound Velocity">
+<name-i18n>Sound Velocity</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>m/s</units><desc>Sound velocity (0 will will set sensor to use measured sound velocity)</desc><min>1300.0</min><max>1700.0</max></param>
+<param name="Log File Name">
+<name-i18n>Log File Name</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Data.ad2cp</default><units></units><desc>Filename of the raw data file where all the measured binary data will be stored in the ADCP</desc></param>
+<param name="Number of Cells">
+<name-i18n>Number of Cells</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>17</default><units></units><desc>Number of Cells</desc><min>1</min><max>200</max></param>
+<param name="Cell Size">
+<name-i18n>Cell Size</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>4.0</default><units>m</units><desc>Cell Size (m)</desc><min>0.5</min><max>4.0</max></param>
+<param name="Blanking Distance">
+<name-i18n>Blanking Distance</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>2.0</default><units>m</units><desc>Blanking Distance (m)</desc><min>0.5</min><max>68.0</max></param>
+<param name="Coordinate System">
+<name-i18n>Coordinate System</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>ENU</default><units></units><desc>Coordinate System (ENU, XYZ or BEAM)</desc></param>
+<param name="Power Level">
+<name-i18n>Power Level</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>-6.0</default><units>dB</units><desc>Power Level (dB, -20.0 to 0.0)</desc><min>-20.0</min><max>0.0</max></param>
+<param name="Average Interval">
+<name-i18n>Average Interval</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>180</default><units>s</units><desc>Average Interval</desc><min>1</min><max>1800</max></param>
+<param name="Velocity Range">
+<name-i18n>Velocity Range</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1.0</default><units>m/s</units><desc>Velocity range along beam (m/s)</desc><min>1.0</min><max>5.0</max></param>
+<param name="Number of Pings">
+<name-i18n>Number of Pings</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>137</default><units></units><desc>Number of Pings</desc><min>1</min><max>7200</max></param>
+<param name="Number of Beams">
+<name-i18n>Number of Beams</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>3</default><units></units><desc>Number of Beams</desc><min>1</min><max>4</max></param>
+<param name="Bandwidth">
+<name-i18n>Bandwidth</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>BROAD</default><units></units><desc>Bandwidth selection. (“NARROW”, “BROAD”)</desc></param>
 </section>
 <section name="Optode Oxygen Sensor" name-i18n="Optode Oxygen Sensor">
 <param name="Entity Label">
