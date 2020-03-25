@@ -54,6 +54,7 @@
 /conf/bathymetry.obj
 /conf/AirOS.conf
 /conf/wifimac.obj
+/conf/*.db
 
 # /conf/i18n/
 /conf/i18n/en

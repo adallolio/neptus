@@ -62,7 +62,7 @@ public class SQLiteSerialization {
 	private static final String driver = "org.sqlite.JDBC";
 	private static DateFormat day = new SimpleDateFormat("yyyyMMdd");
 	private static DateFormat timeOfDay = new SimpleDateFormat("HHmmss");
-	private Connection conn = null;
+	public Connection conn = null;
 	private PreparedStatement newHeader, updateHeaderMsgId;
 	private long commitTime = System.currentTimeMillis();
 	private static SQLiteSerialization sessionDb = null;
@@ -292,13 +292,13 @@ public class SQLiteSerialization {
 			}
 		}));
 
-		synchronized (conn) {
+		/*synchronized (conn) {
 			newHeader = 
 				conn.prepareStatement("INSERT INTO IMC_MessageHeader (IMC_MessageHeader_timestamp,IMC_Specification_id,IMC_MessageType_id,IMC_MessageHeader_src,IMC_MessageHeader_dst) VALUES (?, ?, ?, ?, ?)");
 			
 			updateHeaderMsgId = 
 				conn.prepareStatement("UPDATE IMC_MessageHeader set IMC_Message_id = ? where IMC_MessageHeader_id = ?;");	
-		}		
+		}*/
 		this.filename = filename;
 	}
 	

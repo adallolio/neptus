@@ -188,9 +188,9 @@ public class SystemInfoPainter extends ConsoleLayer {
         else
             txtL2 = txt_OFF;
         if(lev3==0)
-            txtL3 = txt_OFF;
-        else
             txtL3 = txt_ON;
+        else
+            txtL3 = txt_OFF;
         if(iridium==0)
             txtIridium = txt_ON;
         else

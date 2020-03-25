@@ -219,6 +219,14 @@
       </FollowSystem>
     </maneuver>
   </feasibleManeuvers>
+  <protocols-supported>
+    <protocols>iridium</protocols>
+    <protocols-args>
+      <iridium>
+        <imei>300234068669470</imei>
+      </iridium>
+    </protocols-args>
+  </protocols-supported>
   <communication-means>
     <comm-mean>
       <name>ethernet</name>
