@@ -310,7 +310,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 lats.add(rs.getDouble(2));
                 lons.add(rs.getDouble(3));
                 depths.add(rs.getDouble(4));
-                //System.out.printf("%f, %f, %f\n", lats, lons, depths);
+                System.out.printf("%f, %f, %f\n", rs.getDouble(2), rs.getDouble(3), rs.getDouble(4));
             }
             rs.close();
         }
