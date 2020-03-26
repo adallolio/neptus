@@ -35,6 +35,7 @@ package pt.lsts.neptus.plugins.antigrounding;
 
 import java.util.ArrayList;
 import java.awt.Color;
+import java.util.Collections;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
@@ -56,12 +57,19 @@ import pt.lsts.imc.PlanSpecification;
 import pt.lsts.imc.PlanGeneration;
 import pt.lsts.imc.PlanGeneration.CMD;
 import pt.lsts.imc.PlanGeneration.OP;
+import pt.lsts.imc.PlanControl;
+import pt.lsts.imc.PlanManeuver;
+import pt.lsts.imc.Maneuver;
+import pt.lsts.imc.PlanControlState;
+import pt.lsts.imc.PlanControlState.STATE;
 import pt.lsts.neptus.console.ConsoleLayout;
 import pt.lsts.neptus.console.plugins.MainVehicleChangeListener;
 import pt.lsts.neptus.console.ConsoleLayout;
 import pt.lsts.neptus.console.ConsolePanel;
 import pt.lsts.neptus.console.notifications.Notification;
 import pt.lsts.neptus.gui.PropertiesEditor;
+import pt.lsts.neptus.planeditor.IEditorMenuExtension;
+import pt.lsts.neptus.planeditor.IMapPopup;
 import pt.lsts.neptus.i18n.I18n;
 import pt.lsts.neptus.plugins.NeptusProperty;
 import pt.lsts.neptus.plugins.NeptusProperty.LEVEL;
@@ -83,69 +91,41 @@ import java.sql.Statement;
 import pt.lsts.neptus.NeptusLog;
 import pt.lsts.neptus.util.FileUtil;
 import pt.lsts.neptus.util.conf.ConfigFetch;
+import pt.lsts.neptus.types.mission.plan.PlanType;
+import pt.lsts.neptus.comm.IMCUtils;
 
 /**
  * @author alberto
  *
  */
 
-@PluginDescription(name = "Antigrounding Layer", icon = "pt/lsts/neptus/plugins/antigrounding/icons/stop.png", 
+@PluginDescription(name = "Antigrounding Layer", icon = "pt/lsts/neptus/plugins/antigrounding/icons/grounding.png", 
     author = "Alberto Dallolio", version = "0.1", description = "This plugin performs SQL database queries.")
 public class MapLayerGrounding extends SimpleRendererInteraction implements Renderer2DPainter, MainVehicleChangeListener {
 
     // Simple settings
+
+    @NeptusProperty(name = "Map grid size")
+    public double grid_size = 50.0;
+
+    @NeptusProperty(name = "Circle radius")
+    public double circle_radius = 500.0;
+
+    @NeptusProperty(name = "Square side")
+    public double square_side = 200.0;
     
-    @NeptusProperty(name = "Net Height", description = "Height of the actual net (m).", userLevel = LEVEL.REGULAR)
-    public double netHeight = 3;
+    @NeptusProperty(name = "Database path")
+    String db_path = "ENCs/B1420_grid50_WGS84.db";
 
-    @NeptusProperty(name = "Net Orientation", description = "Heading for UAV to enter net (deg | N=0, E=90).", 
-            userLevel = LEVEL.REGULAR)
-    public double netHeading = 66.5;
+    private String currentPlan = null;
+    private String currentManeuver = null;
+    private PlanSpecification planSpec = null;
 
-    @NeptusProperty(name = "Net Latitude", description = "Position of landing net (decimal deg).", 
-            userLevel = LEVEL.REGULAR, editable = false)
-    public double netLat = 63.628600;
-
-    @NeptusProperty(name = "Net Longitude", description = "Position of landing net (decimal deg).", 
-            userLevel = LEVEL.REGULAR, editable = false)
-    public double netLon = 9.727570;
-
-    @NeptusProperty(name = "Ground Level", description = "Height from \"ground\" to bottom of net (m).", 
-            userLevel = LEVEL.REGULAR)
-    public double groundLevel = 30;
 
     // Advanced settings
-    @NeptusProperty(name = "Minimum Turn Radius", description = "Lateral turning radius of UAV (m).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double minTurnRadius = 150;
-
-    @NeptusProperty(name = "Attack Angle", description = "Vertical angle of attack into the net (deg).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double attackAngle = 4;
-
-    @NeptusProperty(name = "Descend Angle", description = "Vertical angle of UAV when descending (deg).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double descendAngle = 4;
-
-    @NeptusProperty(name = "Speed WP1-2", description = "Speed of waypoints WP1 and WP2 (m/s).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double speed12 = 18;
-
-    @NeptusProperty(name = "Speed WP3-5", description = "Speed of waypoints WP3, WP4 and WP5 (m/s).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double speed345 = 16;
-
-    @NeptusProperty(name = "Distance in Front", description = "Distance from net to WP before (should be negative) (m).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double distInFront = -100;
-
-    @NeptusProperty(name = "Distance Behind", description = "Distance from net to aimingpoint (WP) after net (m).", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public double distBehind = 100;
-
-    @NeptusProperty(name = "Ignore Evasive", description = "If true: Force landing despite error demanding evasive.", 
-            userLevel = LEVEL.ADVANCED, category = "Advanced")
-    public boolean ignoreEvasive = false;
+    //@NeptusProperty(name = "Minimum Turn Radius", description = "Lateral turning radius of UAV (m).", 
+    //        userLevel = LEVEL.ADVANCED, category = "Advanced")
+    //public double minTurnRadius = 150;
 
     private LocationType landPos = null;
     
@@ -184,10 +164,12 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             JPopupMenu popup = new JPopupMenu();
             final LocationType loc = source.getRealWorldLocation(event.getPoint());
 
-            addDBConnectionMenu(popup);
+            addDBConnect(popup);
+            addGetSingleDepthMenu(popup, loc);
+            addGetSquareMenu(popup, loc);
+            addGetWithinRadiusMenu(popup, loc);
             addCurrentPlanMenu(popup);
-            //addSetNetMenu(popup, loc);
-            //addSettingMenu(popup);
+            addSettingsMenu(popup);
 
             //addShowLocationsMenu(popup);
             //addShowPolygons(popup);
@@ -196,27 +178,21 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         }
     }
 
-    /*private void addSettingMenu(JPopupMenu popup) {
-        popup.add(I18n.text("Settings")).addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PropertiesEditor.editProperties(LandMapLayer.this, getConsole(), true);
-                updateNetArrow();
-            }
-        });
-    }*/
-
     // I would like this to be inside a menu like "Connect to DB", but I cannot make it!
-    public static final SQLiteSerialization ser = SQLiteSerialization.connect("conf/B1420_grid50_WGS84.db");
+    public static final SQLiteSerialization ser = SQLiteSerialization.connect("ENCs/B1420_grid50_WGS84.db"); // use variable db_path
+    // This function should be used.
+    private void addDBConnect(JPopupMenu popup){
+        
+    }
 
-    private void addDBConnectionMenu(JPopupMenu popup) {
-        JMenuItem item = popup.add(I18n.text("Analyze Current Plan"));
+    private void addGetSingleDepthMenu(JPopupMenu popup, final LocationType loc) {
+        JMenuItem item = popup.add(I18n.text("Get single depth"));
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                loc.convertToAbsoluteLatLonDepth();
                 try {
-                    double depth = getClosestDepth(63.322200, 10.168000); // exists: 63.322200, 10.169700
-                    //sendStatement("select Depth from 'depthmap' where Lat = 63.322200 and Lon = 10.169700;");
+                    double depth = getClosestDepth(loc.getLatitudeDegs(), loc.getLongitudeDegs(), grid_size); // exists: 63.322200, 10.169700
                 } catch (Exception exc) {
                     // TODO: handle exception.
                 }
@@ -224,11 +200,43 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         });
     }
 
-    public double getClosestDepth(double lat, double lon) throws SQLException {
+    private void addGetSquareMenu(JPopupMenu popup, final LocationType loc) {
+        JMenuItem item = popup.add(I18n.text("Get square"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loc.convertToAbsoluteLatLonDepth();
+                try {                    
+                    ArrayList<ArrayList<Double>> cloud = getSquare(loc.getLatitudeDegs(), loc.getLongitudeDegs(), square_side/2);
+                } catch (Exception exc) {
+                    // TODO: handle exception.
+                }
+            }
+        });
+    }
+
+    private void addGetWithinRadiusMenu(JPopupMenu popup, final LocationType loc) {
+        JMenuItem item = popup.add(I18n.text("Get within radius"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loc.convertToAbsoluteLatLonDepth();
+                try {                    
+                    ArrayList<ArrayList<Double>> cloud = getWithinRadius(loc.getLatitudeDegs(), loc.getLongitudeDegs(), circle_radius);
+                } catch (Exception exc) {
+                    // TODO: handle exception.
+                }
+            }
+        });
+    }
+
+    public double getClosestDepth(double lat, double lon, double grid_size) throws SQLException {
         ArrayList<Double> lats;
         ArrayList<Double> lons;
         ArrayList<Double> depths;
         double[] bear_range;
+        double[] ranges = {0.0,0.0,0.0,0.0};
+        
         LocationType queried = new LocationType(lat,lon);
 
         String statem = "select Depth from 'depthmap' where Lat = " + lat + " and Lon = " + lon + ";";
@@ -236,7 +244,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         synchronized (ser.conn) {
             Statement st = ser.conn.createStatement();
             ResultSet rs = st.executeQuery(statem);
-            if (!rs.isBeforeFirst() ) {    
+            if (!rs.isBeforeFirst() ) {
                 System.out.println(" ----------- The query has produced no data! -------- ");
             }
             while(rs.next()) {
@@ -244,32 +252,48 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             }
             rs.close();
         }
-        NeptusLog.pub().info("DEPTH "+ depth);
 
         // Meaning that the query has produced no data.
         if(depth==0.0)
         {
-            ArrayList<ArrayList<Double>> four_points = getClosestDepths(lat, lon);
+            ArrayList<ArrayList<Double>> four_points = getClosestDepths(lat, lon, grid_size);
             lats = four_points.get(0);
             lons = four_points.get(1);
             depths = four_points.get(2);
+
             for(int i=0; i<lats.size(); i++)
             {
                 LocationType close = new LocationType(lats.get(i),lons.get(i));
-                NeptusLog.pub().info("CLOSE "+ close);
                 bear_range = CoordinateUtil.getNEBearingDegreesAndRange(queried,close);
-                System.out.printf("%f, %f\n", bear_range[1], bear_range[2]);
+                ranges[i] = bear_range[1];
+                //NeptusLog.pub().info("BEARING " + bear_range[0] + " AND RANGE "  + bear_range[1]);
             }
+            double[] min = getMin(ranges);
+            //NeptusLog.pub().info("MIN RANGE " + min[0] + " ITS INDEX " + min[1]);
+            depth = depths.get((int)min[1]);
+            //NeptusLog.pub().info("CLOSEST DEPTH " + depth);
         }
-
+        NeptusLog.pub().info("CLOSEST DEPTH " + depth);
         return depth;
     }
 
-    public ArrayList<ArrayList<Double>> getClosestDepths(double Lat, double Lon) throws SQLException {
-        double[] depths_ret = {0.0,0.0};
-        double Lat_rad = Math.toRadians(Lat);
-        double Lon_rad = Math.toRadians(Lon);
-        double disp = 2*50;
+    public static double[] getMin(double[] inputArray){
+        double minValue = inputArray[0];
+        double[] ret = {0.0,0.0};
+        double ind = 0.0;
+        for(int i=1;i<inputArray.length;i++){ 
+          if(inputArray[i] < minValue){ 
+            minValue = inputArray[i];
+            ind = i;
+          }
+        }
+        ret[0] = minValue;
+        ret[1] = ind;
+        return ret;
+    }
+
+    public ArrayList<ArrayList<Double>> getClosestDepths(double Lat, double Lon, double grid_size) throws SQLException {
+        double disp = 2*grid_size;
 
         ArrayList<ArrayList<Double>> all = new ArrayList<>();
         ArrayList<Double> lats = new ArrayList<>();
@@ -278,23 +302,27 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         
         //double lat_minus_displaced = Lat_rad;
         //WGS84::displace(-disp,0.0,&lat_minus_displaced, &Lon_rad);
-        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat_rad, Lon_rad, 0.0, -disp, 0.0, 0.0);
-        double lat_minus_displaced = Math.toDegrees(lat_minus_disp[0]);
+        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, -disp, 0.0, 0.0);
+        double lat_minus_displaced = lat_minus_disp[0];
+        //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
 
         //double lat_plus_displaced = Lat_rad;
         //WGS84::displace(disp,0.0,&lat_plus_displaced, &Lon_rad);
-        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat_rad, Lon_rad, 0.0, disp, 0.0, 0.0);
-        double lat_plus_displaced = Math.toDegrees(lat_plus_disp[0]);
+        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, disp, 0.0, 0.0);
+        double lat_plus_displaced = lat_plus_disp[0];
+        //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
 
         //double lon_minus_displaced = Lon_rad;
         //WGS84::displace(0.0,-disp,&Lat_rad, &lon_minus_displaced);
-        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat_rad, Lon_rad, 0.0, 0.0, -disp, 0.0);
-        double lon_minus_displaced = Math.toDegrees(lon_minus_disp[1]);
+        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, -disp, 0.0);
+        double lon_minus_displaced = lon_minus_disp[1];
+        //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
 
         //double lon_plus_displaced = Lon_rad;
         //WGS84::displace(0.0,disp,&Lat_rad, &lon_plus_displaced);
-        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat_rad, Lon_rad, 0.0, 0.0, disp, 0.0);
-        double lon_plus_displaced = Math.toDegrees(lon_plus_disp[1]);
+        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, disp, 0.0);
+        double lon_plus_displaced = lon_plus_disp[1];
+        //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
 
         String c_stmt = "select min(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat >= " + Lat + " and Lon >= " + Lon +
         " union select max(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat <= " + Lat + " and Lon <= " + Lon + 
@@ -304,6 +332,72 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         synchronized (ser.conn) {
             Statement st = ser.conn.createStatement();
             ResultSet rs = st.executeQuery(c_stmt);
+
+            if (!rs.isBeforeFirst() ) {    
+                System.out.println(" ----------- The query has produced no data! -------- ");
+            }
+            
+            while(rs.next()) {
+                //all.put(rs.getDouble(1), rs.getDouble(2));
+                lats.add(rs.getDouble(2));
+                lons.add(rs.getDouble(3));
+                depths.add(rs.getDouble(4));
+                //System.out.printf("%f, %f, %f\n", rs.getDouble(2), rs.getDouble(3), rs.getDouble(4));
+            }
+            rs.close();
+        }
+        all.add(lats);
+        all.add(lons);
+        all.add(depths);
+        
+        return all;
+    }
+
+    public ArrayList<ArrayList<Double>> getSquare(double Lat, double Lon, double half_size) throws SQLException {
+
+        ArrayList<ArrayList<Double>> all = new ArrayList<>();
+        ArrayList<Double> lats = new ArrayList<>();
+        ArrayList<Double> lons = new ArrayList<>();
+        ArrayList<Double> depths = new ArrayList<>();
+        
+        //double lat_minus_displaced = Lat_rad;
+        //WGS84::displace(-half_size,0.0,&lat_minus_displaced, &Lon_rad);
+        //lat_minus_displaced = Angles::degrees(lat_minus_displaced);
+        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, -half_size, 0.0, 0.0);
+        double lat_minus_displaced = lat_minus_disp[0];
+        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
+
+        //double lat_plus_displaced = Lat_rad;
+        //WGS84::displace(half_size,0.0,&lat_plus_displaced, &Lon_rad);
+        //lat_plus_displaced = Angles::degrees(lat_plus_displaced);
+        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, half_size, 0.0, 0.0);
+        double lat_plus_displaced = lat_plus_disp[0];
+        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
+
+        //double lon_minus_displaced = Lon_rad;
+        //WGS84::displace(0.0,-half_size,&Lat_rad, &lon_minus_displaced);
+        //lon_minus_displaced = Angles::degrees(lon_minus_displaced);
+        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, -half_size, 0.0);
+        double lon_minus_displaced = lon_minus_disp[1];
+        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
+
+        //double lon_plus_displaced = Lon_rad;
+        //WGS84::displace(0.0,half_size,&Lat_rad, &lon_plus_displaced);
+        //lon_plus_displaced = Angles::degrees(lon_plus_displaced);
+        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, half_size, 0.0);
+        double lon_plus_displaced = lon_plus_disp[1];
+        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
+
+        String c_stmt = "select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";";
+        System.out.printf("%s\n", c_stmt);
+
+        synchronized (ser.conn) {
+            Statement st = ser.conn.createStatement();
+            ResultSet rs = st.executeQuery(c_stmt);
+
+            if (!rs.isBeforeFirst()) {    
+                System.out.println(" ----------- The query has produced no data! -------- ");
+            }
             
             while(rs.next()) {
                 //all.put(rs.getDouble(1), rs.getDouble(2));
@@ -317,109 +411,107 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         all.add(lats);
         all.add(lons);
         all.add(depths);
-        
+
         return all;
     }
 
+    public ArrayList<ArrayList<Double>> getWithinRadius(double Lat, double Lon, double radius) throws SQLException {
+        ArrayList<Double> lats, lats_close = new ArrayList<>();
+        ArrayList<Double> lons, lons_close = new ArrayList<>();
+        ArrayList<Double> depths, depths_close = new ArrayList<>();
+        ArrayList<ArrayList<Double>> ret = new ArrayList<ArrayList<Double>>(); // contains all the points (lat,lon,depth) within the radius.
+        double[] bear_range;
+        
+        LocationType queried = new LocationType(Lat,Lon);
 
-    /*public void sendStatement(String statem) throws SQLException {
-        //LinkedHashMap<Double> all = new LinkedHashMap<Double>();
-        double depth = 0.0;
-        synchronized (ser.conn) {
-            Statement st = ser.conn.createStatement();
-            ResultSet rs = st.executeQuery(statem);
-            if (!rs.isBeforeFirst() ) {    
-                System.out.println(" ----------- The query has produced no data! -------- "); 
-            }
-            while(rs.next()) {
-                depth = rs.getDouble(1);
-            }
-            rs.close();
-        }
-        //NeptusLog.pub().info("DEPTH "+ depth);
+        ArrayList<ArrayList<Double>> square = getSquare(Lat,Lon,radius);
+        lats = square.get(0);
+        lons = square.get(1);
+        depths = square.get(2);
 
-        // Meaning that the query has produced no data.
-        if(depth==0.0)
+        for(int i=0; i<lats.size(); i++)
         {
-            synchronized (ser.conn) {
-                Statement st = ser.conn.createStatement();
-                ResultSet rs = st.executeQuery(statem);
-                if (!rs.isBeforeFirst() ) {    
-                    System.out.println(" ----------- The query has produced no data! -------- "); 
-                }
-                while(rs.next()) {
-                    depth = rs.getDouble(1);
-                }
-                rs.close();
+            LocationType close = new LocationType(lats.get(i),lons.get(i));
+            bear_range = CoordinateUtil.getNEBearingDegreesAndRange(queried,close);
+            if(bear_range[1] < radius)
+            {
+                lats_close.add(lats.get(i));
+                lons_close.add(lons.get(i));
+                depths_close.add(depths.get(i));
+            }
+        }
+        ret.add(lats_close);
+        ret.add(lons_close);
+        ret.add(depths_close);
+
+        return ret;
+    }
+
+    private void addSettingsMenu(JPopupMenu popup) {
+        JMenuItem item = popup.add(I18n.text("Parameters"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PropertiesEditor.editProperties(MapLayerGrounding.this, getConsole(), true);
+            }
+        });
+    }
+
+    @Subscribe
+    public void on(PlanSpecification msg) {
+        NeptusLog.pub().info("PLAN SPECIFICATION REC");
+        planSpec = msg;
+    }
+
+    /*@Subscribe
+    public void on(PlanControl msg) {
+        NeptusLog.pub().info("PATH CONTROL REC OUTER");
+        if (msg.getSourceName().equals(getConsole().getMainSystem())) {
+            NeptusLog.pub().info("PATH CONTROL REC INNERRRRRRRRRRRRRRRR");
+            NeptusLog.pub().info("ARG " + msg.getMessage("arg").getAbbrev());
+            if (msg.getMessage("arg").getAbbrev().equals("PlanSpecification")) {
+                planSpec = (PlanSpecification) msg.getMessage("arg");
+                NeptusLog.pub().info("PATH CONTROL REC INNER");
             }
         }
     }*/
+
+    @Subscribe
+    public void on(PlanControlState msg) {
+        if (msg.getSourceName().equals(getConsole().getMainSystem())) {
+            // if the vehicle is currently executing a plan we ask for that plan
+            // and then identify what maneuver is being executed
+            if (msg.getAsNumber("state").longValue() == STATE.EXECUTING.value()) {
+
+                NeptusLog.pub().info("EXECUTING");
+
+                //if (!msg.getAsString("plan_id").equals(currentPlan))
+                //    samePlan = false;
+
+                currentPlan = msg.getAsString("plan_id");
+                currentManeuver = msg.getAsString("man_id");
+
+                if (planSpec != null) {
+                    for (PlanManeuver planMan : planSpec.getManeuvers()) {
+                        Maneuver man = planMan.getData();
+                        double lat = man.getAsNumber("lat").doubleValue();
+                        double lon = man.getAsNumber("lon").doubleValue();
+                        //if (planMan.getManeuverId().equals(currentManeuver)) {}
+
+                        System.out.printf("LAAAAT %f, LOOOON %f\n", lat, lon);
+                    }
+                }
+            }
+        }   
+    }
 
     private void addCurrentPlanMenu(JPopupMenu popup) {
         // First, check that connection to DB is on.
 
         //LinkedHashMap<Lat, Lon, Depth> all = new LinkedHashMap<Lat, Lon, Depth>();
 
-        
     }
 
-    /*private void addStartLandMenu(JPopupMenu popup) {
-        JMenuItem item = popup.add(I18n.text("Start land plan"));
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PlanGeneration pg = new PlanGeneration();
-                String params = "land_lat=" + landPos.getLatitudeDegs() + ";";
-                params += "land_lon=" + landPos.getLongitudeDegs() + ";";
-                params += "land_heading=" + netHeading + ";";
-                params += "net_height=" + netHeight / 2 + ";";
-                params += "min_turn_radius=" + minTurnRadius + ";";
-                params += "attack_angle=" + attackAngle + ";";
-                params += "descend_angle=" + descendAngle + ";";
-
-                params += "dist_behind=" + distBehind + ";";
-                params += "dist_infront=" + distInFront + ";";
-                params += "speed12=" + speed12 + ";";
-                params += "speed345=" + speed345 + ";";
-
-                params += "z_unit=height;"; // "height" or "altitude"
-                params += "ground_level=" + groundLevel + ";";
-
-                params += "ignore_evasive=" + ignoreEvasive + ";";
-
-                pg.setParams(params);
-                pg.setCmd(CMD.EXECUTE); // CMD.GENERATE
-                pg.setOp(OP.REQUEST);
-                pg.setPlanId("land");
-
-                if (pg.getCmd() == CMD.EXECUTE) {
-                    send(new Abort());
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(500);
-                    }
-                    catch (InterruptedException err) {
-                        // Handle exception
-                    }
-                }
-
-                send(pg);
-            }
-        });
-        item.setEnabled(landPos != null);
-    }*/
-
-    /*private void addSetNetMenu(JPopupMenu popup, final LocationType loc) {
-        popup.add(I18n.text("Set net here")).addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loc.convertToAbsoluteLatLonDepth();
-                landPos = loc;
-                netLat = landPos.getLatitudeDegs();
-                netLon = landPos.getLongitudeDegs();
-                updateNetArrow();
-            }
-        });
-    }*/
 
     /**
      * Always returns true
@@ -432,7 +524,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     /**
      * Paints filled circles on the current target and drop positions.
      */
-    @Override
+    /*@Override
     public void paint(Graphics2D g, StateRenderer2D renderer) {
         // If the land position has not been set, there is nothing to paint
         if (landPos == null)
@@ -448,9 +540,9 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         // Draws the "aiming point" in the middle
         g.setColor(Color.red);
         g.fill(new Ellipse2D.Double(-3, -3, 6, 6));
-    }
+    }*/
 
-    @Subscribe
+    /*@Subscribe
     public void on(DeviceState state) {
         // Consumes changes to the net
         netHeading = Math.toDegrees(state.getPsi());
@@ -460,14 +552,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         landPos.setLatitudeDegs(netLat);
         landPos.setLongitudeDegs(netLon);
         updateNetArrow();
-    }
-
-    /*@Subscribe
-    public void on(PlanSpecification msg) {
-        //PlanType plan = IMCUtils.parsePlanSpecification(getConsole().getMission(), msg);  
     }*/
 
-    private void updateNetArrow() {
+
+    /*private void updateNetArrow() {
         double angle = Math.toRadians(netHeading);
         for (int i = 0; i < poly.npoints; i++) {
             int x = arrX[i];
@@ -480,5 +568,5 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             poly.xpoints[i] = (int) Math.round(temp_x);
             poly.ypoints[i] = (int) Math.round(temp_y);
         }
-    }
+    }*/
 }

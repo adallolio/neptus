@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<console name="Neptus Console" width="2495" height="1416" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
-  <!-- Data saved on 2020-02-17T10:52:18.0Z with Neptus version 2019.02.1-dev (compiled on 2020-02-15, gneptus-2019.02.1-dmsmw-83-g8f42fc3-dirty). -->
+<console name="Neptus Console" width="1855" height="1056" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
+  <!-- Data saved on 2020-03-26T13:48:05.0Z with Neptus version 2019.02.1-dev (compiled on 2020-03-26, gneptus-2019.02.1-dmsmw-85-g14bace6-dirty). -->
   <mainpanel name="console main panel">
-    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="2495" height="1360">
+    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1855" height="1000">
       <properties>
         <entry key="XML Definitions">
 &lt;profiles&gt;
@@ -88,10 +88,10 @@
       <child class="pt.lsts.neptus.plugins.map.MapEditor" x="0" y="0" width="0" height="0">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="2189" height="1360">
+      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="1549" height="1000">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="1192">
+      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="832">
         <properties/>
       </child>
       <child class="pt.lsts.neptus.console.plugins.planning.MultiVehiclePlanOverlay" x="0" y="0" width="0" height="0">
@@ -124,7 +124,7 @@
           <entry key="Periodicity (milliseconds)">100</entry>
           <entry key="Traces Script">rudder_angle: ${SetServoPosition.value}*180/Math.PI;
 
-</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="220" height="250">        <properties>          <entry key="Enable Selection">false</entry>
+</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="300" height="600">        <properties>          <entry key="Enable Selection">false</entry>
         </properties>
       </child>
       <child class="pt.lsts.neptus.plugins.txtcmd.TextCommands" x="0" y="0" width="0" height="0">
@@ -154,22 +154,26 @@ course: ${GpsFix.cog} * 180 / Math.PI;</entry>
         <properties/>
       </child>
       <child class="pt.lsts.neptus.plugins.ais.AisOverlay" x="0" y="0" width="0" height="0">
-        <properties>
-          <entry key="Show only when selected">true</entry>
-          <entry key="Show stationary vessels">false</entry>
-          <entry key="Show speed in knots">false</entry>
-          <entry key="Moving vessel color">java.awt.Color[r=0,g=0,b=178]</entry>
-          <entry key="Stationary vessel color">java.awt.Color[r=89,g=89,b=89]</entry>
-          <entry key="Milliseconds between vessel updates">60000</entry>
-          <entry key="Interpolate and predict positions">false</entry>
-          <entry key="Show vessel names">true</entry>
-          <entry key="Show vessel speeds">true</entry>
-          <entry key="Vessel label color">java.awt.Color[r=0,g=0,b=0]</entry>
-        </properties>
+        <properties/>
       </child>
       <child class="pt.lsts.neptus.plugins.aismanager.panel.AisManager" x="0" y="0" width="0" height="0">
+        <properties/>
+      </child>
+      <child class="pt.lsts.neptus.plugins.antigrounding.MapLayerGrounding" x="0" y="0" width="0" height="0">
         <properties>
-          <entry key="Danger Zone (Meters)">100.0</entry>
+          <entry key="Ignore Evasive">false</entry>
+          <entry key="Descend Angle">4.0</entry>
+          <entry key="Distance in Front">-100.0</entry>
+          <entry key="Speed WP1-2">18.0</entry>
+          <entry key="Minimum Turn Radius">150.0</entry>
+          <entry key="Net Height">3.0</entry>
+          <entry key="Ground Level">30.0</entry>
+          <entry key="Net Latitude">63.6286</entry>
+          <entry key="Speed WP3-5">16.0</entry>
+          <entry key="Net Longitude">9.72757</entry>
+          <entry key="Distance Behind">100.0</entry>
+          <entry key="Attack Angle">4.0</entry>
+          <entry key="Net Orientation">66.5</entry>
         </properties>
       </child>
     </subpanel>
@@ -199,13 +203,13 @@ course: ${GpsFix.cog} * 180 / Math.PI;</entry>
     </layer>
   </layers>
   <interactions>
+    <interaction class="pt.lsts.neptus.plugins.aismanager.layer.AisPathMonitor">
+      <properties/>
+    </interaction>
     <interaction class="pt.lsts.neptus.console.bathymLayer.DepthSoundingsInteraction">
       <properties/>
     </interaction>
     <interaction class="pt.lsts.neptus.console.plugins.SystemsInteraction">
-      <properties/>
-    </interaction>
-    <interaction class="pt.lsts.neptus.plugins.aismanager.layer.AisPathMonitor">
       <properties/>
     </interaction>
   </interactions>
