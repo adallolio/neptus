@@ -33,6 +33,7 @@
  */
 package pt.lsts.neptus.plugins.antigrounding;
 
+import java.util.*;
 import java.util.ArrayList;
 import java.awt.Color;
 import java.util.Collections;
@@ -115,11 +116,23 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public double square_side = 200.0;
     
     @NeptusProperty(name = "Database path")
-    String db_path = "ENCs/B1420_grid50_WGS84.db";
+    public String db_path = "ENCs/B1420_grid50_WGS84.db";
 
+    public static final Color VERY_DARK_RED = new Color(153,0,0);
+
+    private boolean samePlan = false;
+    private String newPlan = null;
     private String currentPlan = null;
     private String currentManeuver = null;
     private PlanSpecification planSpec = null;
+    public ArrayList<Double> current_targets_lat = new ArrayList<Double>();
+    public ArrayList<Double> current_targets_lon = new ArrayList<Double>();
+    public boolean show_waypoints = false;
+    public boolean show_transect = false;
+    public ArrayList<Double> plan_waypoint = new ArrayList<Double>();
+    public double[] plan_waypoint_draw = {0.0,0.0};
+    public ArrayList<ArrayList<Double>> plan_waypoints = new ArrayList<ArrayList<Double>>();
+    ArrayList<ArrayList<Double>> transects = new ArrayList<ArrayList<Double>>();
 
 
     // Advanced settings
@@ -171,6 +184,9 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             addCurrentPlanMenu(popup);
             addSettingsMenu(popup);
 
+            addShowWaypointsMenu(popup);
+            addShowTransectMenu(popup);
+
             //addShowLocationsMenu(popup);
             //addShowPolygons(popup);
 
@@ -192,7 +208,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             public void actionPerformed(ActionEvent e) {
                 loc.convertToAbsoluteLatLonDepth();
                 try {
-                    double depth = getClosestDepth(loc.getLatitudeDegs(), loc.getLongitudeDegs(), grid_size); // exists: 63.322200, 10.169700
+                    ArrayList<Double> closest_loc = getClosestDepth(loc.getLatitudeDegs(), loc.getLongitudeDegs(), grid_size); // exists: 63.322200, 10.169700
                 } catch (Exception exc) {
                     // TODO: handle exception.
                 }
@@ -230,10 +246,11 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         });
     }
 
-    public double getClosestDepth(double lat, double lon, double grid_size) throws SQLException {
+    public ArrayList<Double> getClosestDepth(double lat, double lon, double grid_size) throws SQLException {
         ArrayList<Double> lats;
         ArrayList<Double> lons;
         ArrayList<Double> depths;
+        ArrayList<Double> ret = new ArrayList<Double>();
         double[] bear_range;
         double[] ranges = {0.0,0.0,0.0,0.0};
         
@@ -249,6 +266,9 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             }
             while(rs.next()) {
                 depth = rs.getDouble(1);
+                ret.add(lat);
+                ret.add(lon);
+                ret.add(depth);
             }
             rs.close();
         }
@@ -270,11 +290,18 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             }
             double[] min = getMin(ranges);
             //NeptusLog.pub().info("MIN RANGE " + min[0] + " ITS INDEX " + min[1]);
-            depth = depths.get((int)min[1]);
-            //NeptusLog.pub().info("CLOSEST DEPTH " + depth);
+            double lat_add = lats.get((int)min[1]);
+            double lon_add = lons.get((int)min[1]);
+            double depth_add = depths.get((int)min[1]);
+            ret.add(lat_add);
+            ret.add(lon_add);
+            ret.add(depth_add);
+            
+            //depth = depths.get((int)min[1]);
+            NeptusLog.pub().info("CLOSEST LOCATION LAT " + lat_add + " LON " + lon_add + " DEPTH " +depth_add);
         }
-        NeptusLog.pub().info("CLOSEST DEPTH " + depth);
-        return depth;
+        //NeptusLog.pub().info("CLOSEST DEPTH " + depth);
+        return ret;
     }
 
     public static double[] getMin(double[] inputArray){
@@ -360,33 +387,21 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<Double> lons = new ArrayList<>();
         ArrayList<Double> depths = new ArrayList<>();
         
-        //double lat_minus_displaced = Lat_rad;
-        //WGS84::displace(-half_size,0.0,&lat_minus_displaced, &Lon_rad);
-        //lat_minus_displaced = Angles::degrees(lat_minus_displaced);
         double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, -half_size, 0.0, 0.0);
         double lat_minus_displaced = lat_minus_disp[0];
-        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
+        //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
 
-        //double lat_plus_displaced = Lat_rad;
-        //WGS84::displace(half_size,0.0,&lat_plus_displaced, &Lon_rad);
-        //lat_plus_displaced = Angles::degrees(lat_plus_displaced);
         double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, half_size, 0.0, 0.0);
         double lat_plus_displaced = lat_plus_disp[0];
-        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
+        //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
 
-        //double lon_minus_displaced = Lon_rad;
-        //WGS84::displace(0.0,-half_size,&Lat_rad, &lon_minus_displaced);
-        //lon_minus_displaced = Angles::degrees(lon_minus_displaced);
         double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, -half_size, 0.0);
         double lon_minus_displaced = lon_minus_disp[1];
-        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
+        //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
 
-        //double lon_plus_displaced = Lon_rad;
-        //WGS84::displace(0.0,half_size,&Lat_rad, &lon_plus_displaced);
-        //lon_plus_displaced = Angles::degrees(lon_plus_displaced);
         double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, half_size, 0.0);
         double lon_plus_displaced = lon_plus_disp[1];
-        System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
+        //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
 
         String c_stmt = "select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";";
         System.out.printf("%s\n", c_stmt);
@@ -459,8 +474,64 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
     @Subscribe
     public void on(PlanSpecification msg) {
-        NeptusLog.pub().info("PLAN SPECIFICATION REC");
+        NeptusLog.pub().info("PLAN SPECIFICATION RECEIVED");
         planSpec = msg;
+        current_targets_lat.clear();
+        current_targets_lon.clear();
+        //newPlan = msg.getAsString("plan_id");
+
+        if (planSpec != null) {
+            for (PlanManeuver planMan : planSpec.getManeuvers()) {
+                Maneuver man = planMan.getData();
+                double lat = man.getAsNumber("lat").doubleValue();
+                double lon = man.getAsNumber("lon").doubleValue();
+                current_targets_lat.add(lat);
+                current_targets_lon.add(lon);
+                System.out.printf("PLANNED LAT %f, LON %f\n", lat, lon);
+            }
+        }
+    }
+
+    private void addCurrentPlanMenu(JPopupMenu popup) {
+        JMenuItem item = popup.add(I18n.text("Analyze current plan"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    for(int i=1; i<current_targets_lat.size()+1; i++)
+                    {
+                        plan_waypoint = getClosestDepth(Math.toDegrees(current_targets_lat.get(i-1)), Math.toDegrees(current_targets_lon.get(i-1)), grid_size);
+                        plan_waypoints.add(plan_waypoint);
+                        
+                        LocationType start = new LocationType(Math.toDegrees(current_targets_lat.get(i-1)),Math.toDegrees(current_targets_lon.get(i-1)));
+                        LocationType end = new LocationType(Math.toDegrees(current_targets_lat.get(i)),Math.toDegrees(current_targets_lon.get(i)));
+                        ArrayList<ArrayList<Double>> transect = checkTransect(start,end);
+                        transects.addAll(transect);
+                    }
+                } catch (Exception exc) {
+                    // TODO: handle exception.
+                }
+            }
+        });
+    }
+
+    public ArrayList<ArrayList<Double>> checkTransect(LocationType start, LocationType end) throws SQLException {
+        double[] bear_range = CoordinateUtil.getNEBearingDegreesAndRange(start,end);
+        double steps = bear_range[1]/grid_size;
+        double startLat = start.getLatitudeDegs();
+        double endLat = end.getLatitudeDegs();
+        double startLon = start.getLongitudeDegs();
+        double endLon = end.getLongitudeDegs();
+        double stepLat = (endLat-startLat)/steps;
+        double stepLon = (endLon-startLon)/steps;
+        ArrayList<ArrayList<Double>> sampled_locs = new ArrayList<ArrayList<Double>>();
+
+        for(int step=0; step<steps; step++)
+        {
+            ArrayList<Double> closest_loc = getClosestDepth(startLat+step*stepLat, startLon+step*stepLon, grid_size);
+            sampled_locs.add(closest_loc);
+        }
+        return sampled_locs;
     }
 
     /*@Subscribe
@@ -476,7 +547,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         }
     }*/
 
-    @Subscribe
+    /*@Subscribe
     public void on(PlanControlState msg) {
         if (msg.getSourceName().equals(getConsole().getMainSystem())) {
             // if the vehicle is currently executing a plan we ask for that plan
@@ -485,13 +556,13 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
                 NeptusLog.pub().info("EXECUTING");
 
-                //if (!msg.getAsString("plan_id").equals(currentPlan))
-                //    samePlan = false;
+                if(!msg.getAsString("plan_id").equals(currentPlan))
+                    samePlan = false;
 
                 currentPlan = msg.getAsString("plan_id");
                 currentManeuver = msg.getAsString("man_id");
 
-                if (planSpec != null) {
+                if (planSpec != null && samePlan) {
                     for (PlanManeuver planMan : planSpec.getManeuvers()) {
                         Maneuver man = planMan.getData();
                         double lat = man.getAsNumber("lat").doubleValue();
@@ -503,15 +574,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 }
             }
         }   
-    }
-
-    private void addCurrentPlanMenu(JPopupMenu popup) {
-        // First, check that connection to DB is on.
-
-        //LinkedHashMap<Lat, Lon, Depth> all = new LinkedHashMap<Lat, Lon, Depth>();
-
-    }
-
+    }*/
 
     /**
      * Always returns true
@@ -521,26 +584,103 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         return true;
     }
 
+    private void addShowWaypointsMenu(JPopupMenu popup) {
+        JMenuItem item = popup.add(I18n.text("Show Plan Waypoints"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(!show_waypoints)
+                        show_waypoints = true;
+                    if(show_waypoints)
+                        show_waypoints = false;
+                } catch (Exception exc) {
+                    // TODO: handle exception.
+                }
+            }
+        });
+    }
+
+    private void addShowTransectMenu(JPopupMenu popup) {
+        JMenuItem item = popup.add(I18n.text("Show Transect Locations"));
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    show_transect = true;
+                } catch (Exception exc) {
+                    // TODO: handle exception.
+                }
+            }
+        });
+    }
+
     /**
      * Paints filled circles on the current target and drop positions.
      */
-    /*@Override
+    //@Override
     public void paint(Graphics2D g, StateRenderer2D renderer) {
+        super.paint(g, renderer);
+
         // If the land position has not been set, there is nothing to paint
-        if (landPos == null)
+        if (!show_waypoints && !show_transect)
             return;
 
-        Point2D pt = renderer.getScreenPosition(landPos);
-        g.translate(pt.getX(), pt.getY());
+        //System.out.printf("SSSSSSSSSSIZE %d\n", current_targets_lat.size());
+        //System.out.printf("LENGTH %d\n", plan_waypoints.size());
+        
+        if(show_waypoints && !show_transect)
+        {
+            int wp_num = plan_waypoints.size();
+        
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                ArrayList<Double> current_waypoint = plan_waypoints.get(i);
+                double lat = current_waypoint.get(0);
+                double lon = current_waypoint.get(1);
+                double depth = current_waypoint.get(2);
+                String depth_str = Double.toString(depth);
+                LocationType location = new LocationType(lat, lon);
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
 
-        // Draws the "arrow"
-        g.setColor(Color.green);
-        g.fillPolygon(poly);
+                // Draws the "arrow"
+                //g.setColor(Color.green);
+                //g.fillPolygon(poly);
 
-        // Draws the "aiming point" in the middle
-        g.setColor(Color.red);
-        g.fill(new Ellipse2D.Double(-3, -3, 6, 6));
-    }*/
+                // Draws the "aiming point" in the middle
+                clone.setColor(VERY_DARK_RED);
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                clone.drawString(I18n.text(depth_str), 10, 0);
+            }
+        } else if(!show_waypoints && show_transect)
+        {
+            int wp_num = transects.size();
+        
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                ArrayList<Double> current_waypoint = transects.get(i);
+                double lat = current_waypoint.get(0);
+                double lon = current_waypoint.get(1);
+                double depth = current_waypoint.get(2);
+                String depth_str = Double.toString(depth);
+                LocationType location = new LocationType(lat, lon);
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
+
+                // Draws the "arrow"
+                //g.setColor(Color.green);
+                //g.fillPolygon(poly);
+
+                // Draws the "aiming point" in the middle
+                clone.setColor(VERY_DARK_RED);
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                clone.drawString(I18n.text(depth_str), 10, 0);
+            }
+        }
+    }
 
     /*@Subscribe
     public void on(DeviceState state) {
