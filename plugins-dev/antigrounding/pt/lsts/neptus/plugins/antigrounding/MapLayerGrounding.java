@@ -141,16 +141,20 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public boolean show_circle = false;
     public boolean second_wp = false;
     public boolean check_transect = false;
-    public boolean show_transect = false;
+    public boolean show_single_transect = false;
+    public boolean show_transects = false;
     public ArrayList<Double> plan_waypoint = new ArrayList<Double>();
     public ArrayList<ArrayList<Double>> plan_waypoints = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> transects = new ArrayList<ArrayList<Double>>();
+    ArrayList<ArrayList<Double>> single_transect = new ArrayList<ArrayList<Double>>();
     LocationType autonaut = new LocationType();
     LocationType transect_start = new LocationType();
     LocationType transect_end = new LocationType();
     public ColorBar cb = null;
     private ColorMap colorMapCurrents = ColorMapFactory.createBlueToRedColorMap();
     ArrayList<Double> single = new ArrayList<Double>();
+    ArrayList<ArrayList<Double>> square = new ArrayList<ArrayList<Double>>();
+    ArrayList<ArrayList<Double>> circle = new ArrayList<ArrayList<Double>>();
 
 
     // Advanced settings
@@ -203,7 +207,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             addCurrentPlanMenu(popup);
             popup.addSeparator();
             addShowWaypointsMenu(popup);
-            //addShowTransectMenu(popup);
+            addShowTransectMenu(popup);
             addShowSoundingsMenu(popup);
             addShowLegendMenu(popup);
             popup.addSeparator();
@@ -226,12 +230,12 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             loc.convertToAbsoluteLatLonDepth();
             transect_end.setLocation(loc);
             second_wp = false;
-            show_transect = true;
+            show_single_transect = true;
 
             // Check this transect.
             try {
-                ArrayList<ArrayList<Double>> transect = checkTransect(transect_start,transect_end);
-                transects.addAll(transect);
+                single_transect.clear();
+                single_transect = checkTransect(transect_start,transect_end);
             } catch (Exception exc) {
                 // TODO: handle exception.
             }
@@ -286,7 +290,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
     private void addGetTransectMenu(JPopupMenu popup) {
         //JMenuItem item = popup.add(I18n.text("Show Transect Locations"));
-        if(!show_transect)
+        if(!show_single_transect)
         {
             popup.add(I18n.text("Check Transect")).addActionListener(new ActionListener(){
                 @Override
@@ -299,7 +303,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             popup.add(I18n.text("Hide Transect")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    show_transect = false;
+                    show_single_transect = false;
                 }
             });
         }
@@ -312,49 +316,53 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             popup.add(I18n.text("Get Square")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    check_transect = true;
+                    loc.convertToAbsoluteLatLonDepth();
+                    try {                    
+                        NeptusLog.pub().info("QUERIED LAT " + loc.getLatitudeDegs() + " AND LON " + loc.getLongitudeDegs());
+                        square = getSquare(loc.getLatitudeDegs(), loc.getLongitudeDegs(), square_side);
+                        //NeptusLog.pub().info("LAT " + square.get(0) + " LON " + square.get(1) + " DEPTH " + square.get(2));
+                        show_square = true;
+                    } catch (Exception exc) {
+                        // TODO: handle exception.
+                    }
                 }
             });
         } else
         {
-            popup.add(I18n.text("Hide Transect")).addActionListener(new ActionListener(){
+            popup.add(I18n.text("Hide Square")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    show_transect = false;
+                    show_square = false;
                 }
             });
         }
     }
 
-    private void addGetSquareMenu(JPopupMenu popup, final LocationType loc) {
-        JMenuItem item = popup.add(I18n.text("Get square"));
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loc.convertToAbsoluteLatLonDepth();
-                try {                    
-                    NeptusLog.pub().info("QUERIED LAT " + loc.getLatitudeDegs() + " AND LON " + loc.getLongitudeDegs());
-                    ArrayList<ArrayList<Double>> cloud = getSquare(loc.getLatitudeDegs(), loc.getLongitudeDegs(), square_side/2);
-                } catch (Exception exc) {
-                    // TODO: handle exception.
-                }
-            }
-        });
-    }
-
     private void addGetWithinRadiusMenu(JPopupMenu popup, final LocationType loc) {
-        JMenuItem item = popup.add(I18n.text("Get within radius"));
-        item.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                loc.convertToAbsoluteLatLonDepth();
-                try {                    
-                    ArrayList<ArrayList<Double>> cloud = getWithinRadius(loc.getLatitudeDegs(), loc.getLongitudeDegs(), circle_radius);
-                } catch (Exception exc) {
-                    // TODO: handle exception.
+        if(!show_circle)
+        {
+            popup.add(I18n.text("Get Circle")).addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    loc.convertToAbsoluteLatLonDepth();
+                    try {                    
+                        NeptusLog.pub().info("QUERIED LAT " + loc.getLatitudeDegs() + " AND LON " + loc.getLongitudeDegs());
+                        circle = getWithinRadius(loc.getLatitudeDegs(), loc.getLongitudeDegs(), circle_radius);
+                        show_circle = true;
+                    } catch (Exception exc) {
+                        // TODO: handle exception.
+                    }
                 }
-            }
-        });
+            });
+        } else
+        {
+            popup.add(I18n.text("Hide Circle")).addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    show_circle = false;
+                }
+            });
+        }
     }
 
     private void addCurrentPlanMenu(JPopupMenu popup) {
@@ -412,6 +420,27 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         }
     }
 
+    private void addShowTransectMenu(JPopupMenu popup) {
+        //JMenuItem item = popup.add(I18n.text("Show Plan Waypoints"));
+        if(!show_transects)
+        {
+            popup.add(I18n.text("Show Plan Transects")).addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    show_transects = true;
+                }
+            });
+        } else
+        {
+            popup.add(I18n.text("Hide Plan Transects")).addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    show_transects = false;
+                }
+            });
+        }
+    }
+
     
 
     private void addShowSoundingsMenu(JPopupMenu popup) {
@@ -426,7 +455,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             });
         } else
         {
-            popup.add(I18n.text("Show Soundings")).addActionListener(new ActionListener(){
+            popup.add(I18n.text("Hide Soundings")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     show_soundings = false;
@@ -466,22 +495,6 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             }
         });
     }
-
-    /*protected void drawLegend(Graphics2D g) {
-        Color colors[]={Color.blue, Color.cyan, Color.yellow, Color.red, Color.darkGray,
-            Color.gray, Color.lightGray, Color.magenta, Color.orange, Color.pink,
-            Color.white, Color.black};
-
-        cb = new ColorBar(ColorBar.VERTICAL_ORIENTATION, colors);
-
-        g.setColor(Color.black);
-        Font prev = g.getFont();
-        g.setFont(new Font("Helvetica", Font.BOLD, 14));
-        g.setFont(prev);
-        g.translate(5,5);
-        cb.paint(g);
-
-    }*/
 
     private void paintColorbars(Graphics2D go, StateRenderer2D renderer) {
         int offsetHeight = 180;
@@ -659,7 +672,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             Statement st = ser.conn.createStatement();
             ResultSet rs = st.executeQuery(c_stmt);
 
-            if (!rs.isBeforeFirst()) {    
+            if (!rs.isBeforeFirst()) {
                 System.out.println(" ----------- The query has produced no data! -------- ");
             }
 
@@ -667,7 +680,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 lats.add(rs.getDouble(1));
                 lons.add(rs.getDouble(2));
                 depths.add(rs.getDouble(3));
-                //System.out.printf("%f, %f, %f\n", rs.getDouble(1), rs.getDouble(2), rs.getDouble(3));
+                System.out.printf("%f, %f, %f\n", rs.getDouble(1), rs.getDouble(2), rs.getDouble(3));
             }
             rs.close();
         }
@@ -814,6 +827,26 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         return true;
     }
 
+    public Color chooseColor(double depth){
+        Color color = new Color(0);
+        if(depth < -1000)
+            color = new Color(43, 15, 249);
+        else if(depth >= -1000 && depth < -500)
+            color = new Color(71, 13, 197);
+        else if(depth >= -500 && depth < -250)
+            color = new Color(98, 12, 145);
+        else if(depth >= -250 && depth < -100)
+            color = new Color(135, 9, 76);
+        else if(depth >= -100 && depth < -50)
+            color = new Color(154, 8, 42);
+        else if(depth >= -50 && depth < -20)
+            color = new Color(163, 8, 24);
+        else if(depth >= -20 && depth < 0)
+            color = new Color(172, 7, 7);
+
+        return color;
+    }
+
     /**
      * Paints filled circles on the current target and drop positions.
      */
@@ -825,13 +858,15 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             paintColorbars(g, renderer);
 
         // If the land position has not been set, there is nothing to paint
-        if (!show_waypoints && !show_transect && !show_single)
+        if (!show_waypoints && !show_transects && !show_single_transect && !show_single && !show_square && !show_circle)
             return;
+        //else
+        //{
+        //    if(show_waypoints)
 
-        //System.out.printf("SSSSSSSSSSIZE %d\n", current_targets_lat.size());
-        //System.out.printf("LENGTH %d\n", plan_waypoints.size());
+        //}
         
-        if(show_waypoints && !show_transect)
+        if(show_waypoints && !show_transects)
         {
             int wp_num = plan_waypoints.size();
         
@@ -852,26 +887,15 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
-                if(depth < -1000)
-                    clone.setColor(new Color(43, 15, 249));
-                else if(depth >= -1000 && depth < -500)
-                    clone.setColor(new Color(71, 13, 197));
-                else if(depth >= -500 && depth < -250)
-                    clone.setColor(new Color(98, 12, 145));
-                else if(depth >= -250 && depth < -100)
-                    clone.setColor(new Color(135, 9, 76));
-                else if(depth >= -100 && depth < -50)
-                    clone.setColor(new Color(154, 8, 42));
-                else if(depth >= -50 && depth < -20)
-                    clone.setColor(new Color(163, 8, 24));
-                else if(depth >= -20 && depth < 0)
-                    clone.setColor(new Color(172, 7, 7));
+
+                Color col = chooseColor(depth);
+                clone.setColor(col);
 
                 clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
                 if(show_soundings)
                     clone.drawString(I18n.text(depth_str), 10, 0);
             }
-        } else if(show_transect)
+        } else if(show_transects)
         {
             int wp_num = transects.size();
         
@@ -892,21 +916,9 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
-                if(depth < -1000)
-                    clone.setColor(new Color(43, 15, 249));
-                else if(depth >= -1000 && depth < -500)
-                    clone.setColor(new Color(71, 13, 197));
-                else if(depth >= -500 && depth < -250)
-                    clone.setColor(new Color(98, 12, 145));
-                else if(depth >= -250 && depth < -100)
-                    clone.setColor(new Color(135, 9, 76));
-                else if(depth >= -100 && depth < -50)
-                    clone.setColor(new Color(154, 8, 42));
-                else if(depth >= -50 && depth < -20)
-                    clone.setColor(new Color(163, 8, 24));
-                else if(depth >= -20 && depth < 0)
-                    clone.setColor(new Color(172, 7, 7));
-                
+                Color col = chooseColor(depth);
+                clone.setColor(col);
+
                 clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
                 if(show_soundings)
                     clone.drawString(I18n.text(depth_str), 10, 0);
@@ -920,6 +932,34 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             double lon = single.get(1);
             double depth = -single.get(2);
             String depth_str = Double.toString(depth);
+            LocationType location = new LocationType(lat, lon);
+            Point2D pt = renderer.getScreenPosition(location);
+            clone.translate(pt.getX(), pt.getY());
+
+            // Draws the "arrow"
+            //g.setColor(Color.green);
+            //g.fillPolygon(poly);
+
+            // Should be done according to colormap, not like this..
+            Color col = chooseColor(depth);
+            clone.setColor(col);
+
+            clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+            if(show_soundings)
+                clone.drawString(I18n.text(depth_str), 10, 0);
+        }
+
+        if(show_single_transect)
+        {
+            int wp_num = single_transect.size();
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                ArrayList<Double> current_loc = single_transect.get(i);
+                double lat = current_loc.get(0);
+                double lon = current_loc.get(1);
+                double depth = -current_loc.get(2);
+                String depth_str = Double.toString(depth);
                 LocationType location = new LocationType(lat, lon);
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
@@ -929,23 +969,75 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
-                if(depth < -1000)
-                    clone.setColor(new Color(43, 15, 249));
-                else if(depth >= -1000 && depth < -500)
-                    clone.setColor(new Color(71, 13, 197));
-                else if(depth >= -500 && depth < -250)
-                    clone.setColor(new Color(98, 12, 145));
-                else if(depth >= -250 && depth < -100)
-                    clone.setColor(new Color(135, 9, 76));
-                else if(depth >= -100 && depth < -50)
-                    clone.setColor(new Color(154, 8, 42));
-                else if(depth >= -50 && depth < -20)
-                    clone.setColor(new Color(163, 8, 24));
-                else if(depth >= -20 && depth < 0)
-                    clone.setColor(new Color(172, 7, 7));
+                Color col = chooseColor(depth);
+                clone.setColor(col);
 
                 clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text(depth_str), 10, 0);
+                if(show_soundings)
+                    clone.drawString(I18n.text(depth_str), 10, 0);
+            }
+        }
+
+        if(show_square)
+        {
+            int wp_num = square.get(0).size();
+
+            //NeptusLog.pub().info("SIIIIIZEEEE " + square.length);
+        
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                double lat = square.get(0).get(i);
+                double lon = square.get(1).get(i);
+                double depth = -square.get(2).get(i);
+                String depth_str = Double.toString(depth);
+                LocationType location = new LocationType(lat, lon);
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
+
+                // Draws the "arrow"
+                //g.setColor(Color.green);
+                //g.fillPolygon(poly);
+
+                // Should be done according to colormap, not like this..
+                Color col = chooseColor(depth);
+                clone.setColor(col);
+
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                if(show_soundings)
+                    clone.drawString(I18n.text(depth_str), 10, 0);
+            }
+        }
+
+        if(show_circle)
+        {
+            int wp_num = circle.get(0).size();
+
+            //NeptusLog.pub().info("SIIIIIZEEEE " + wp_num);
+        
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                double lat = circle.get(0).get(i);
+                double lon = circle.get(1).get(i);
+                double depth = -circle.get(2).get(i);
+                String depth_str = Double.toString(depth);
+                LocationType location = new LocationType(lat, lon);
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
+
+                // Draws the "arrow"
+                //g.setColor(Color.green);
+                //g.fillPolygon(poly);
+
+                // Should be done according to colormap, not like this..
+                Color col = chooseColor(depth);
+                clone.setColor(col);
+
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                if(show_soundings)
+                    clone.drawString(I18n.text(depth_str), 10, 0);
+            }
         }
 
     }
