@@ -204,13 +204,13 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             addGetTransectMenu(popup);
             addGetSquareMenu(popup, loc);
             addGetWithinRadiusMenu(popup, loc);
-            addCurrentPlanMenu(popup);
             popup.addSeparator();
+            addCurrentPlanMenu(popup);
             addShowWaypointsMenu(popup);
             addShowTransectMenu(popup);
+            popup.addSeparator();
             addShowSoundingsMenu(popup);
             addShowLegendMenu(popup);
-            popup.addSeparator();
             addSettingsMenu(popup);
 
             //addShowLocationsMenu(popup);
