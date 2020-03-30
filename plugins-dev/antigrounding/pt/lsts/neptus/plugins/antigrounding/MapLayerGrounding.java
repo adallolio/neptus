@@ -61,6 +61,7 @@ import com.google.common.eventbus.Subscribe;
 import pt.lsts.imc.DeviceState;
 import pt.lsts.imc.PlanSpecification;
 import pt.lsts.imc.PlanGeneration;
+import pt.lsts.imc.PlanDB;
 import pt.lsts.imc.GpsFix;
 import pt.lsts.imc.PlanGeneration.CMD;
 import pt.lsts.imc.PlanGeneration.OP;
@@ -122,7 +123,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public double square_side = 200.0;
     
     @NeptusProperty(name = "Database path")
-    public String db_path = "ENCs/B1420_grid50_WGS84.db";
+    //public String db_path = "ENCs/B1420_grid50_WGS84.db";
+    public String db_path = "ENCs/poi_depthmap_depare-rad-indexed.db";
 
     //public static final Color VERY_DARK_RED = new Color(153,0,0);
 
@@ -134,6 +136,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public ArrayList<Double> current_targets_lat = new ArrayList<Double>();
     public ArrayList<Double> current_targets_lon = new ArrayList<Double>();
     public boolean show_legend = false;
+    public boolean show_grounding = false;
     public boolean show_soundings = false;
     public boolean show_waypoints = false;
     public boolean show_single = false;
@@ -150,11 +153,11 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     LocationType autonaut = new LocationType();
     LocationType transect_start = new LocationType();
     LocationType transect_end = new LocationType();
-    public ColorBar cb = null;
-    private ColorMap colorMapCurrents = ColorMapFactory.createBlueToRedColorMap();
+    private ColorMap colorMap = ColorMapFactory.createBlueToRedColorMap();
     ArrayList<Double> single = new ArrayList<Double>();
     ArrayList<ArrayList<Double>> square = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> circle = new ArrayList<ArrayList<Double>>();
+    ArrayList<ArrayList<Double>> ground = new ArrayList<ArrayList<Double>>();
 
 
     // Advanced settings
@@ -243,7 +246,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     }
 
     // I would like this to be inside a menu like "Connect to DB", but I cannot make it!
-    public static final SQLiteSerialization ser = SQLiteSerialization.connect("ENCs/B1420_grid50_WGS84.db"); // use variable db_path
+    public static final SQLiteSerialization ser = SQLiteSerialization.connect("ENCs/poi_depthmap_depare-rad-indexed.db"); // use variable db_path
     // This function should be used.
     //private void addDBConnect(JPopupMenu popup){
         
@@ -256,7 +259,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        single = getClosestDepth(loc.getLatitudeDegs(), loc.getLongitudeDegs(), grid_size); // exists: 63.322200, 10.169700
+                        single = getClosestDepth(loc.getLatitudeRads(), loc.getLongitudeRads(), grid_size); // exists: 63.322200, 10.169700
                         show_single = true;
                     } catch (Exception exc) {
                         // TODO: handle exception.
@@ -304,6 +307,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     show_single_transect = false;
+                    ground.clear();
                 }
             });
         }
@@ -319,7 +323,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                     loc.convertToAbsoluteLatLonDepth();
                     try {                    
                         NeptusLog.pub().info("QUERIED LAT " + loc.getLatitudeDegs() + " AND LON " + loc.getLongitudeDegs());
-                        square = getSquare(loc.getLatitudeDegs(), loc.getLongitudeDegs(), square_side);
+                        square = getSquare(loc.getLatitudeRads(), loc.getLongitudeRads(), square_side);
                         //NeptusLog.pub().info("LAT " + square.get(0) + " LON " + square.get(1) + " DEPTH " + square.get(2));
                         show_square = true;
                     } catch (Exception exc) {
@@ -347,7 +351,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                     loc.convertToAbsoluteLatLonDepth();
                     try {                    
                         NeptusLog.pub().info("QUERIED LAT " + loc.getLatitudeDegs() + " AND LON " + loc.getLongitudeDegs());
-                        circle = getWithinRadius(loc.getLatitudeDegs(), loc.getLongitudeDegs(), circle_radius);
+                        circle = getWithinRadius(loc.getLatitudeRads(), loc.getLongitudeRads(), circle_radius);
                         show_circle = true;
                     } catch (Exception exc) {
                         // TODO: handle exception.
@@ -373,21 +377,21 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 try {
                     for(int i=1; i<current_targets_lat.size()+1; i++)
                     {
-                        plan_waypoint = getClosestDepth(Math.toDegrees(current_targets_lat.get(i-1)), Math.toDegrees(current_targets_lon.get(i-1)), grid_size);
+                        plan_waypoint = getClosestDepth(current_targets_lat.get(i-1), current_targets_lon.get(i-1), grid_size);
                         plan_waypoints.add(plan_waypoint);
                         
                         if(current_targets_lat.size() == 1)
                         {
                             // Just one GoTo.
                             transect_start.setLocation(autonaut);
-                            transect_end.setLatitudeDegs(Math.toDegrees(current_targets_lat.get(i-1)));
-                            transect_end.setLongitudeDegs(Math.toDegrees(current_targets_lon.get(i-1)));
+                            transect_end.setLatitudeRads(current_targets_lat.get(i-1));
+                            transect_end.setLongitudeRads(current_targets_lon.get(i-1));
                         } else if(current_targets_lat.size() > 1)
                         {
-                            transect_start.setLatitudeDegs(Math.toDegrees(current_targets_lat.get(i-1)));
-                            transect_start.setLongitudeDegs(Math.toDegrees(current_targets_lon.get(i-1)));
-                            transect_end.setLatitudeDegs(Math.toDegrees(current_targets_lat.get(i)));
-                            transect_end.setLongitudeDegs(Math.toDegrees(current_targets_lon.get(i)));
+                            transect_start.setLatitudeRads(current_targets_lat.get(i-1));
+                            transect_start.setLongitudeRads(current_targets_lon.get(i-1));
+                            transect_end.setLatitudeRads(current_targets_lat.get(i));
+                            transect_end.setLongitudeRads(current_targets_lon.get(i));
                         }
                         ArrayList<ArrayList<Double>> transect = checkTransect(transect_start,transect_end);
                         transects.addAll(transect);
@@ -503,7 +507,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         //int counter = 2;
         Graphics2D gl = (Graphics2D) go.create();
         gl.translate(offsetWidth, offsetHeight);
-        ColorBarPainterUtil.paintColorBar(gl, colorMapCurrents, I18n.text("Depth"), "meters", -1000, 0);
+        ColorBarPainterUtil.paintColorBar(gl, colorMap, I18n.text("Depth"), "meters", -1000, 0);
         gl.dispose();
         offsetHeight += offsetDelta;
     }
@@ -515,10 +519,12 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<Double> ret = new ArrayList<Double>();
         double[] bear_range;
         double[] ranges = {0.0,0.0,0.0,0.0};
+        boolean gr = false;
+        ArrayList<Double> ground_location = new ArrayList<Double>();
         
         LocationType queried = new LocationType(lat,lon);
 
-        String statem = "select Depth from 'depthmap' where Lat = " + lat + " and Lon = " + lon + ";";
+        String statem = "select Depth from 'depthmapRad' where Lat = " + lat + " and Lon = " + lon + ";";
         double depth = 0.0;
         synchronized (ser.conn) {
             Statement st = ser.conn.createStatement();
@@ -542,25 +548,43 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             lats = four_points.get(0);
             lons = four_points.get(1);
             depths = four_points.get(2);
+            NeptusLog.pub().info("FOUR CLOSEST " + four_points +  "\n");
 
-            for(int i=0; i<lats.size(); i++)
+            for(int j=0; j<lats.size(); j++)
             {
-                LocationType close = new LocationType(lats.get(i),lons.get(i));
-                bear_range = CoordinateUtil.getNEBearingDegreesAndRange(queried,close);
-                ranges[i] = bear_range[1];
-                //NeptusLog.pub().info("BEARING " + bear_range[0] + " AND RANGE "  + bear_range[1]);
+                if(!gr && lats.get(j) == 0.0)
+                    gr = true;
             }
-            double[] min = getMin(ranges);
-            //NeptusLog.pub().info("MIN RANGE " + min[0] + " ITS INDEX " + min[1]);
-            double lat_add = lats.get((int)min[1]);
-            double lon_add = lons.get((int)min[1]);
-            double depth_add = depths.get((int)min[1]);
-            ret.add(lat_add);
-            ret.add(lon_add);
-            ret.add(depth_add);
+
+            if(!gr && lats.size() == 4)
+            {
+                //show_single_transect = true;
+                for(int i=0; i<lats.size(); i++)
+                {
+                    LocationType close = new LocationType(Math.toDegrees(lats.get(i)),Math.toDegrees(lons.get(i)));
+                    bear_range = CoordinateUtil.getNEBearingDegreesAndRange(queried,close);
+                    ranges[i] = bear_range[1];
+                    //NeptusLog.pub().info("BEARING " + bear_range[0] + " AND RANGE "  + bear_range[1]);
+                }
+                double[] min = getMin(ranges);
+                //NeptusLog.pub().info("MIN RANGE " + min[0] + " ITS INDEX " + min[1]);
+                double lat_add = lats.get((int)min[1]);
+                double lon_add = lons.get((int)min[1]);
+                double depth_add = depths.get((int)min[1]);
+                ret.add(lat_add);
+                ret.add(lon_add);
+                ret.add(depth_add);
+            } else if(gr || lats.size() < 4)
+            {
+                NeptusLog.pub().warn("POSSIBLE GROUNDING!");
+                ground_location.add(lat);
+                ground_location.add(lon);
+                ground.add(ground_location);
+
+                show_grounding = true;
+            }
             
-            //depth = depths.get((int)min[1]);
-            NeptusLog.pub().info("CLOSEST LOCATION LAT " + lat_add + " LON " + lon_add + " DEPTH " +depth_add);
+            //NeptusLog.pub().info("CLOSEST LOCATION LAT " + lat_add + " LON " + lon_add + " DEPTH " +depth_add);
         }
         //NeptusLog.pub().info("CLOSEST DEPTH " + depth);
         return ret;
@@ -591,32 +615,32 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         
         //double lat_minus_displaced = Lat_rad;
         //WGS84::displace(-disp,0.0,&lat_minus_displaced, &Lon_rad);
-        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, -disp, 0.0, 0.0);
-        double lat_minus_displaced = lat_minus_disp[0];
+        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, -disp, 0.0, 0.0);
+        double lat_minus_displaced = Math.toRadians(lat_minus_disp[0]);
         //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
 
         //double lat_plus_displaced = Lat_rad;
         //WGS84::displace(disp,0.0,&lat_plus_displaced, &Lon_rad);
-        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, disp, 0.0, 0.0);
-        double lat_plus_displaced = lat_plus_disp[0];
+        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, disp, 0.0, 0.0);
+        double lat_plus_displaced = Math.toRadians(lat_plus_disp[0]);
         //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
 
         //double lon_minus_displaced = Lon_rad;
         //WGS84::displace(0.0,-disp,&Lat_rad, &lon_minus_displaced);
-        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, -disp, 0.0);
-        double lon_minus_displaced = lon_minus_disp[1];
+        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, 0.0, -disp, 0.0);
+        double lon_minus_displaced = Math.toRadians(lon_minus_disp[1]);
         //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
 
         //double lon_plus_displaced = Lon_rad;
         //WGS84::displace(0.0,disp,&Lat_rad, &lon_plus_displaced);
-        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, disp, 0.0);
-        double lon_plus_displaced = lon_plus_disp[1];
+        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, 0.0, disp, 0.0);
+        double lon_plus_displaced = Math.toRadians(lon_plus_disp[1]);
         //System.out.printf("LAT_D %f, LON_D %f, DEPTH_D %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
 
-        String c_stmt = "select min(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat >= " + Lat + " and Lon >= " + Lon +
-        " union select max(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat <= " + Lat + " and Lon <= " + Lon + 
-        " union select min(Lat-Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat >= " + Lat + " and Lon <= " + Lon + 
-        " union select max(Lat-Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmap where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat <= " + Lat + " and Lon >= " + Lon + ";";
+        String c_stmt = "select min(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmapRad where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat >= " + Lat + " and Lon >= " + Lon +
+        " union select max(Lat+Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmapRad where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat <= " + Lat + " and Lon <= " + Lon + 
+        " union select min(Lat-Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmapRad where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat >= " + Lat + " and Lon <= " + Lon + 
+        " union select max(Lat-Lon), Lat, Lon, Depth from (select Lat, Lon, Depth from depthmapRad where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ") where Lat <= " + Lat + " and Lon >= " + Lon + ";";
 
         synchronized (ser.conn) {
             Statement st = ser.conn.createStatement();
@@ -649,23 +673,23 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<Double> lons = new ArrayList<>();
         ArrayList<Double> depths = new ArrayList<>();
         
-        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, -half_size, 0.0, 0.0);
-        double lat_minus_displaced = lat_minus_disp[0];
+        double [] lat_minus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, -half_size, 0.0, 0.0);
+        double lat_minus_displaced = Math.toRadians(lat_minus_disp[0]);
         //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_minus_disp[0], lat_minus_disp[1], lat_minus_disp[2]);
 
-        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, half_size, 0.0, 0.0);
-        double lat_plus_displaced = lat_plus_disp[0];
+        double [] lat_plus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, half_size, 0.0, 0.0);
+        double lat_plus_displaced = Math.toRadians(lat_plus_disp[0]);
         //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lat_plus_disp[0], lat_plus_disp[1], lat_plus_disp[2]);
 
-        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, -half_size, 0.0);
-        double lon_minus_displaced = lon_minus_disp[1];
+        double [] lon_minus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, 0.0, -half_size, 0.0);
+        double lon_minus_displaced = Math.toRadians(lon_minus_disp[1]);
         //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_minus_disp[0], lon_minus_disp[1], lon_minus_disp[2]);
 
-        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Lat, Lon, 0.0, 0.0, half_size, 0.0);
-        double lon_plus_displaced = lon_plus_disp[1];
+        double [] lon_plus_disp = CoordinateUtil.WGS84displace(Math.toDegrees(Lat), Math.toDegrees(Lon), 0.0, 0.0, half_size, 0.0);
+        double lon_plus_displaced = Math.toRadians(lon_plus_disp[1]);
         //System.out.printf("LAT_D_S %f, LON_D_S %f, DEPTH_D_S %f\n", lon_plus_disp[0], lon_plus_disp[1], lon_plus_disp[2]);
 
-        String c_stmt = "select Lat, Lon, Depth from 'depthmap' where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";";
+        String c_stmt = "select Lat, Lon, Depth from 'depthmapRad' where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";";
         System.out.printf("%s\n", c_stmt);
 
         synchronized (ser.conn) {
@@ -680,7 +704,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 lats.add(rs.getDouble(1));
                 lons.add(rs.getDouble(2));
                 depths.add(rs.getDouble(3));
-                System.out.printf("%f, %f, %f\n", rs.getDouble(1), rs.getDouble(2), rs.getDouble(3));
+                System.out.printf("%f, %f, %f\n", Math.toDegrees(rs.getDouble(1)), Math.toDegrees(rs.getDouble(2)), rs.getDouble(3));
             }
             rs.close();
         }
@@ -698,7 +722,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<ArrayList<Double>> ret = new ArrayList<ArrayList<Double>>(); // contains all the points (lat,lon,depth) within the radius.
         double[] bear_range;
         
-        LocationType queried = new LocationType(Lat,Lon);
+        LocationType queried = new LocationType(Math.toDegrees(Lat),Math.toDegrees(Lon));
 
         ArrayList<ArrayList<Double>> square = getSquare(Lat,Lon,radius);
         lats = square.get(0);
@@ -707,7 +731,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
         for(int i=0; i<lats.size(); i++)
         {
-            LocationType close = new LocationType(lats.get(i),lons.get(i));
+            LocationType close = new LocationType(Math.toDegrees(lats.get(i)),Math.toDegrees(lons.get(i)));
             bear_range = CoordinateUtil.getNEBearingDegreesAndRange(queried,close);
             if(bear_range[1] < radius)
             {
@@ -753,18 +777,22 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public void on(GpsFix msg) {
         double aut_lat = msg.getLat();
         double aut_lon = msg.getLon();
-        autonaut.setLatitudeDegs(Math.toDegrees(aut_lat));
-        autonaut.setLongitudeDegs(Math.toDegrees(aut_lon));
+        autonaut.setLatitudeRads(aut_lat);
+        autonaut.setLongitudeRads(aut_lon);
         //NeptusLog.pub().info("AUTONAUT LAT " + Math.toDegrees(aut_lat) + " AND LON " + Math.toDegrees(aut_lon));
+    }
+    
+    @Subscribe
+    public void on(PlanDB msg) {
     }
 
     public ArrayList<ArrayList<Double>> checkTransect(LocationType start, LocationType end) throws SQLException {
         double[] bear_range = CoordinateUtil.getNEBearingDegreesAndRange(start,end);
         double steps = bear_range[1]/grid_size;
-        double startLat = start.getLatitudeDegs();
-        double endLat = end.getLatitudeDegs();
-        double startLon = start.getLongitudeDegs();
-        double endLon = end.getLongitudeDegs();
+        double startLat = start.getLatitudeRads();
+        double endLat = end.getLatitudeRads();
+        double startLon = start.getLongitudeRads();
+        double endLon = end.getLongitudeRads();
         double stepLat = (endLat-startLat)/steps;
         double stepLon = (endLon-startLon)/steps;
         ArrayList<ArrayList<Double>> sampled_locs = new ArrayList<ArrayList<Double>>();
@@ -772,7 +800,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         for(int step=0; step<steps; step++)
         {
             ArrayList<Double> closest_loc = getClosestDepth(startLat+step*stepLat, startLon+step*stepLon, grid_size);
-            sampled_locs.add(closest_loc);
+            if(closest_loc.isEmpty())
+                NeptusLog.pub().info("grounding");
+            else
+                sampled_locs.add(closest_loc);
         }
         return sampled_locs;
     }
@@ -860,11 +891,6 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         // If the land position has not been set, there is nothing to paint
         if (!show_waypoints && !show_transects && !show_single_transect && !show_single && !show_square && !show_circle)
             return;
-        //else
-        //{
-        //    if(show_waypoints)
-
-        //}
         
         if(show_waypoints && !show_transects)
         {
@@ -877,8 +903,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 double lat = current_waypoint.get(0);
                 double lon = current_waypoint.get(1);
                 double depth = -current_waypoint.get(2);
-                String depth_str = Double.toString(depth);
-                LocationType location = new LocationType(lat, lon);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
@@ -887,7 +913,6 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
-
                 Color col = chooseColor(depth);
                 clone.setColor(col);
 
@@ -906,14 +931,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 double lat = current_waypoint.get(0);
                 double lon = current_waypoint.get(1);
                 double depth = -current_waypoint.get(2);
-                String depth_str = Double.toString(depth);
-                LocationType location = new LocationType(lat, lon);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
-
-                // Draws the "arrow"
-                //g.setColor(Color.green);
-                //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
                 Color col = chooseColor(depth);
@@ -931,14 +952,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             double lat = single.get(0);
             double lon = single.get(1);
             double depth = -single.get(2);
-            String depth_str = Double.toString(depth);
-            LocationType location = new LocationType(lat, lon);
+            String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+            LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
             Point2D pt = renderer.getScreenPosition(location);
             clone.translate(pt.getX(), pt.getY());
-
-            // Draws the "arrow"
-            //g.setColor(Color.green);
-            //g.fillPolygon(poly);
 
             // Should be done according to colormap, not like this..
             Color col = chooseColor(depth);
@@ -959,14 +976,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 double lat = current_loc.get(0);
                 double lon = current_loc.get(1);
                 double depth = -current_loc.get(2);
-                String depth_str = Double.toString(depth);
-                LocationType location = new LocationType(lat, lon);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
-
-                // Draws the "arrow"
-                //g.setColor(Color.green);
-                //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
                 Color col = chooseColor(depth);
@@ -981,23 +994,16 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         if(show_square)
         {
             int wp_num = square.get(0).size();
-
-            //NeptusLog.pub().info("SIIIIIZEEEE " + square.length);
-        
             for(int i=0; i<wp_num; i++)
             {
                 Graphics2D clone = (Graphics2D) g.create();
                 double lat = square.get(0).get(i);
                 double lon = square.get(1).get(i);
                 double depth = -square.get(2).get(i);
-                String depth_str = Double.toString(depth);
-                LocationType location = new LocationType(lat, lon);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
-
-                // Draws the "arrow"
-                //g.setColor(Color.green);
-                //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
                 Color col = chooseColor(depth);
@@ -1021,14 +1027,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 double lat = circle.get(0).get(i);
                 double lon = circle.get(1).get(i);
                 double depth = -circle.get(2).get(i);
-                String depth_str = Double.toString(depth);
-                LocationType location = new LocationType(lat, lon);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
-
-                // Draws the "arrow"
-                //g.setColor(Color.green);
-                //g.fillPolygon(poly);
 
                 // Should be done according to colormap, not like this..
                 Color col = chooseColor(depth);
@@ -1037,6 +1039,22 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
                 if(show_soundings)
                     clone.drawString(I18n.text(depth_str), 10, 0);
+            }
+        }
+
+        if(show_grounding)
+        {
+            int wp_num = ground.size();
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                double lat = ground.get(i).get(0);
+                double lon = ground.get(i).get(1);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
+                clone.setColor(Color.BLACK);
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
             }
         }
 
