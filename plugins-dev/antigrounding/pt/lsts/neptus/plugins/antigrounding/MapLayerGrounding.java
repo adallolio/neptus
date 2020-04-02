@@ -192,6 +192,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     public boolean show_soundings = false;
     public boolean show_waypoints = false;
     public boolean show_single = false;
+    public boolean request_single = false;
     public boolean show_square = false;
     public boolean show_circle = false;
     public boolean show_buoys = false;
@@ -333,6 +334,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
+                        request_single = true;
                         single = getClosestDepth(loc.getLatitudeRads(), loc.getLongitudeRads(), grid_size); // exists: 63.322200, 10.169700
                     } catch (Exception exc) {
                         // TODO: handle exception.
@@ -346,6 +348,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 public void actionPerformed(ActionEvent e) {
                     show_single = false;
                     show_grounding = false;
+                    request_single = false;
                     ground.clear();
                 }
             });
@@ -1015,7 +1018,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 ret.add(lat_add);
                 ret.add(lon_add);
                 ret.add(depth_add);
-                show_single = true;
+                if(request_single)
+                    show_single = true;
             } else if(gr || lats.size() < 4)
             {
                 NeptusLog.pub().warn("POSSIBLE GROUNDING!");
