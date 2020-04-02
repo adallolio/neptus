@@ -52,6 +52,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D;
 import java.util.concurrent.TimeUnit;
 import pt.lsts.neptus.util.AngleUtils;
+import pt.lsts.neptus.util.ImageUtils;
+import pt.lsts.neptus.plugins.PluginUtils;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -102,6 +104,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import pt.lsts.neptus.NeptusLog;
+import javax.swing.ImageIcon;
 import pt.lsts.neptus.util.FileUtil;
 import pt.lsts.neptus.util.conf.ConfigFetch;
 import pt.lsts.neptus.types.mission.plan.PlanType;
@@ -231,6 +234,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     ArrayList<ArrayList<Double>> regimes = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> wrecks = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> stones = new ArrayList<ArrayList<Double>>();
+    public ArrayList<LocationType> regimes_vertices = new ArrayList<LocationType>();
 
     public static final Color DARK_BLUE = new Color(0,0,204);
 
@@ -303,12 +307,12 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             loc.convertToAbsoluteLatLonDepth();
             transect_end.setLocation(loc);
             second_wp = false;
-            show_single_transect = true;
 
             // Check this transect.
             try {
                 single_transect.clear();
                 single_transect = checkTransect(transect_start,transect_end);
+                show_single_transect = true;
             } catch (Exception exc) {
                 // TODO: handle exception.
             }
@@ -596,7 +600,6 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 public void actionPerformed(ActionEvent e) {
                     try {                    
                         manageFeature(regimes_layer, regimes);
-                        show_regimes = true;
                     } catch (Exception exc) {
                         // TODO: handle exception.
                     }
@@ -844,6 +847,44 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         {
             boolean dp = true;
             depth_conts = getSquare(mouse_click.getLatitudeRads(), mouse_click.getLongitudeRads(), radius_depare*1000, dp);
+        } else if(name.equals(regimes_layer))
+        {
+            double lat=0.0,lon=0.0;
+            String statem = "select Lat,Lon from " + name + " limit 1;";
+            System.out.printf("%s\n", statem);
+            synchronized (ser.conn) {
+                Statement st = ser.conn.createStatement();
+                ResultSet rs = st.executeQuery(statem);
+                if (!rs.isBeforeFirst() ) {
+                    System.out.println(" ----------- The query has produced no data! -------- ");
+                }
+                while(rs.next()) {
+                    lat=rs.getDouble(1);
+                    lon=rs.getDouble(2);
+                    System.out.printf("%f, %f\n", Math.toDegrees(rs.getDouble(1)), Math.toDegrees(rs.getDouble(2)));
+                }
+                rs.close();
+            }
+            String statem_n = "select Lat,Lon from " + name + " order by abs(Lat-"+lat+") + abs(Lon-"+lon+") asc;";
+            System.out.printf("%s\n", statem_n);
+            synchronized (ser.conn) {
+                Statement st = ser.conn.createStatement();
+                ResultSet rs = st.executeQuery(statem_n);
+                if (!rs.isBeforeFirst() ) {
+                    System.out.println(" ----------- The query has produced no data! -------- ");
+                }
+                while(rs.next()) {
+                    //LocationType vertex = new LocationType(Math.toDegrees(rs.getDouble(1)),Math.toDegrees(rs.getDouble(2)));
+                    //regimes_vertices.add(vertex);
+                    lats.add(rs.getDouble(1));
+                    lons.add(rs.getDouble(2));
+                    //System.out.printf("%f, %f\n", Math.toDegrees(rs.getDouble(1)), Math.toDegrees(rs.getDouble(2)));
+                }
+                rs.close();
+            }
+            fill.add(lats);
+            fill.add(lons);
+            buildPolygon();
         } else
         {
             String statem = "select Lat,Lon from " + name + ";";
@@ -863,8 +904,53 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             }
 
             fill.add(lats);
-            fill.add(lons);
+            fill.add(lons); 
         }
+    }
+
+    public void buildPolygon() {
+
+        int reg_locs = regimes.get(0).size();
+        double max_lat = Collections.max(regimes.get(0));
+        double min_lat = Collections.min(regimes.get(0));
+        ArrayList<Integer> max_lat_indexes = new ArrayList<Integer>();
+        ArrayList<Integer> min_lat_indexes = new ArrayList<Integer>();
+        ArrayList<Double> lons1 = new ArrayList<Double>();
+        ArrayList<Double> lons2 = new ArrayList<Double>();
+
+        for(int i=0; i<reg_locs;i++)
+        {
+            if(regimes.get(0).get(i)==max_lat)
+                max_lat_indexes.add(i);
+            else if(regimes.get(0).get(i)==min_lat)
+                min_lat_indexes.add(i);
+        }
+
+        for(int j=0; j<max_lat_indexes.size(); j++) {
+            int index = max_lat_indexes.get(j);
+            lons1.add(regimes.get(1).get(index));
+        }
+        for(int k=0; k<min_lat_indexes.size(); k++) {
+            int index = min_lat_indexes.get(k);
+            lons2.add(regimes.get(1).get(index));
+        }
+
+        double max_lon_for_max_lat = Collections.max(lons1);
+        double min_lon_for_max_lat = Collections.min(lons1);
+        double max_lon_for_min_lat = Collections.max(lons2);
+        double min_lon_for_min_lat = Collections.min(lons2);
+
+        LocationType top_left = new LocationType(Math.toDegrees(max_lat),Math.toDegrees(min_lon_for_max_lat));
+        LocationType top_right = new LocationType(Math.toDegrees(max_lat),Math.toDegrees(max_lon_for_max_lat));
+        LocationType bottom_left = new LocationType(Math.toDegrees(min_lat),Math.toDegrees(min_lon_for_min_lat));
+        LocationType bottom_right = new LocationType(Math.toDegrees(min_lat),Math.toDegrees(max_lon_for_min_lat));
+
+        regimes_vertices.add(top_left);
+        regimes_vertices.add(top_right);
+        regimes_vertices.add(bottom_left);
+        regimes_vertices.add(bottom_right);
+
+        show_regimes = true;
     }
 
     public ArrayList<Double> getClosestDepth(double lat, double lon, double grid_size) throws SQLException {
@@ -1564,19 +1650,31 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
         if(show_regimes)
         {
-            Graphics2D clone = (Graphics2D) g.create();
 
-            int wp_num = regimes.get(0).size();
-            int[] EXEZNE_arrX = new int[wp_num];
-            int[] EXEZNE_arrY = new int[wp_num];
+            /*Graphics2D clone_points = (Graphics2D) g.create();
 
-            NeptusLog.pub().info("SIIIIIZEEEE " + wp_num);
-            
-            for(int i=0; i<wp_num; i++)
+            int num = regimes.get(0).size();
+
+            for(int i=0; i<num; i++)
             {
                 double lat = regimes.get(0).get(i);
                 double lon = regimes.get(1).get(i);
                 LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
+                Point2D pt = renderer.getScreenPosition(location);
+                clone_points.translate(pt.getX(), pt.getY());
+
+                clone_points.fill(new Rectangle2D.Double(0, 0, 10, 10));
+            }*/
+
+            Graphics2D clone = (Graphics2D) g.create();
+
+            int wp_num = regimes_vertices.size();
+            int[] EXEZNE_arrX = new int[wp_num];
+            int[] EXEZNE_arrY = new int[wp_num];
+
+            for(int i=0; i<wp_num; i++)
+            {
+                LocationType location = regimes_vertices.get(i);
                 Point2D pt = renderer.getScreenPosition(location);
                 //clone.translate(pt.getX(), pt.getY());
                 EXEZNE_arrX[i] = (int) Math.round(pt.getX());
@@ -1592,7 +1690,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
             Polygon poly = new Polygon(EXEZNE_arrX, EXEZNE_arrY, wp_num);
 
-            clone.setColor(Color.green);
+            clone.setColor(new Color(255,0,0,127)); // 50% transparency
             clone.fillPolygon(poly);
         }
 
@@ -1652,7 +1750,6 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         int offsetHeight = 180;
         int offsetWidth = 15;
         int offsetDelta = 250;
-        //int counter = 2;
         Graphics2D gl = (Graphics2D) go.create();
         gl.translate(offsetWidth, offsetHeight);
         ColorBarPainterUtil.paintColorBar(gl, colorMap, I18n.text("Depth"), "meters", -1000, 0);
