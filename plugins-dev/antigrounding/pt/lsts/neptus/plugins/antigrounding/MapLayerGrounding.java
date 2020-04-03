@@ -49,6 +49,7 @@ import pt.lsts.neptus.colormap.ColorMapFactory;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.awt.geom.Point2D;
 import java.util.concurrent.TimeUnit;
 import pt.lsts.neptus.util.AngleUtils;
@@ -104,18 +105,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import pt.lsts.neptus.NeptusLog;
+import java.awt.Image;
 import javax.swing.ImageIcon;
 import pt.lsts.neptus.util.FileUtil;
 import pt.lsts.neptus.util.conf.ConfigFetch;
 import pt.lsts.neptus.types.mission.plan.PlanType;
 import pt.lsts.neptus.comm.IMCUtils;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 /**
  * @author alberto
  *
  */
 
-@PluginDescription(name = "Antigrounding Layer", icon = "pt/lsts/neptus/plugins/antigrounding/icons/grounding.png", 
+@PluginDescription(name = "Antigrounding Layer", icon = "pt/lsts/neptus/plugins/antigrounding/icons/antigrounding.png", 
     author = "Alberto Dallolio", version = "0.1", description = "This plugin performs SQL database queries.")
 public class MapLayerGrounding extends SimpleRendererInteraction implements Renderer2DPainter, MainVehicleChangeListener {
 
@@ -239,6 +243,10 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
     public static final Color DARK_BLUE = new Color(0,0,204);
 
+    private List<Image> images = new ArrayList<Image>();
+
+    public String current_dir = System.getProperties().getProperty("user.dir") + "/plugins-dev/antigrounding/pt/lsts/neptus/plugins/antigrounding/";
+
     // Advanced settings
     //@NeptusProperty(name = "Minimum Turn Radius", description = "Lateral turning radius of UAV (m).", 
     //        userLevel = LEVEL.ADVANCED, category = "Advanced")
@@ -269,6 +277,16 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
      */
     @Override
     public void mouseClicked(MouseEvent event, StateRenderer2D source) {
+
+        images.add(new ImageIcon(current_dir+"icons/buoy.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/beacon.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/light.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/obstruction.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/pier.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/rock.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/wreck.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/grounding.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+        images.add(new ImageIcon(current_dir+"icons/danger.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH));
 
         if (event.getButton() == MouseEvent.BUTTON3) {
             JPopupMenu popup = new JPopupMenu();
@@ -1527,8 +1545,9 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("buoy"), 10, 0);
+                //clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
+                //clone.drawString(I18n.text("buoy"), 10, 0);
+                clone.drawImage(images.get(0), 0, 0, null);
             }
         }
 
@@ -1544,8 +1563,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("bcn"), 10, 0);
+                clone.drawImage(images.get(1), 0, 0, null);
             }
         }
 
@@ -1561,8 +1579,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("dng"), 10, 0);
+                clone.drawImage(images.get(8), 0, 0, null);
             }
         }
 
@@ -1596,8 +1613,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("l"), 10, 0);
+                clone.drawImage(images.get(2), 0, 0, null);
             }
         }
 
@@ -1630,8 +1646,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("o"), 10, 0);
+                clone.drawImage(images.get(3), 0, 0, null);
             }
         }
 
@@ -1647,8 +1662,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("p"), 10, 0);
+                clone.drawImage(images.get(4), 0, 0, null);
             }
         }
 
@@ -1710,8 +1724,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("s"), 10, 0);
+                clone.drawImage(images.get(5), 0, 0, null);
             }
         }
 
@@ -1727,8 +1740,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.fill(new Rectangle2D.Double(0, 0, 10, 10));
-                clone.drawString(I18n.text("w"), 10, 0);
+                clone.drawImage(images.get(6), 0, 0, null);
             }
         }
 
@@ -1743,8 +1755,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
-                clone.setColor(Color.BLACK);
-                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                clone.drawImage(images.get(7), 0, 0, null);
             }
         }
 
