@@ -224,7 +224,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     float radius_depare = 0.0f;
     public LocationType mouse_click = new LocationType();
     private ColorMap colorMap = ColorMapFactory.createBlueToRedColorMap();
-    ArrayList<Double> single = new ArrayList<Double>();
+    ArrayList<ArrayList<Double>> singles = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> square = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> circle = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> ground = new ArrayList<ArrayList<Double>>();
@@ -315,6 +315,21 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             popup.show(source, event.getPoint().x, event.getPoint().y);
         }
 
+        if(show_single && event.getButton() == MouseEvent.BUTTON1)
+        {
+            LocationType loc = source.getRealWorldLocation(event.getPoint());
+            loc.convertToAbsoluteLatLonDepth();
+            try {
+                ArrayList<Double> single = getClosestDepth(loc.getLatitudeRads(), loc.getLongitudeRads(), grid_size);
+                if(single.isEmpty())
+                    NeptusLog.pub().info("grounding");
+                else
+                    singles.add(single);
+            } catch (Exception exc) {
+                // TODO: handle exception.
+            }
+        }
+
         if (event.getButton() == MouseEvent.BUTTON1 && check_transect) {
             LocationType loc = source.getRealWorldLocation(event.getPoint());
             loc.convertToAbsoluteLatLonDepth();
@@ -353,7 +368,13 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 public void actionPerformed(ActionEvent e) {
                     try {
                         request_single = true;
-                        single = getClosestDepth(loc.getLatitudeRads(), loc.getLongitudeRads(), grid_size); // exists: 63.322200, 10.169700
+                        ArrayList<Double> single = getClosestDepth(loc.getLatitudeRads(), loc.getLongitudeRads(), grid_size); // exists: 63.322200, 10.169700
+                        if(single.isEmpty())
+                            NeptusLog.pub().info("grounding");
+                        else
+                            singles.add(single);
+                        
+                        NeptusLog.pub().info("SINGLE " + singles);
                     } catch (Exception exc) {
                         // TODO: handle exception.
                     }
@@ -361,13 +382,14 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             });
         } else if(show_grounding || show_single)
         {
-            popup.add(I18n.text("Remove single depth")).addActionListener(new ActionListener(){
+            popup.add(I18n.text("Hide single depth")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     show_single = false;
                     show_grounding = false;
                     request_single = false;
                     ground.clear();
+                    singles.clear();
                 }
             });
         }
@@ -756,7 +778,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             featuresMenu.add(new JMenuItem("Show Depth Contours")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String radiusStr = JOptionPane.showInputDialog(getConsole(), I18n.text("Please enter radius (km) for depth contours"), radius_depare);
+                    String radiusStr = JOptionPane.showInputDialog(getConsole(), I18n.text("Please enter square side (km) for depth contours"), radius_depare);
                     if (radiusStr == null)
                         return;
                     try {
@@ -841,7 +863,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             });
         } else
         {
-            popup.add(I18n.text("Show Color Legend")).addActionListener(new ActionListener(){
+            popup.add(I18n.text("Hide Color Legend")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     show_legend = false;
@@ -1439,22 +1461,26 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
         if(show_single)
         {
-            Graphics2D clone = (Graphics2D) g.create();
-            double lat = single.get(0);
-            double lon = single.get(1);
-            double depth = -single.get(2);
-            String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
-            LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
-            Point2D pt = renderer.getScreenPosition(location);
-            clone.translate(pt.getX(), pt.getY());
+            int wp_num = singles.size();
+            for(int i=0; i<wp_num; i++)
+            {
+                Graphics2D clone = (Graphics2D) g.create();
+                double lat = singles.get(i).get(0);
+                double lon = singles.get(i).get(1);
+                double depth = -singles.get(i).get(2);
+                String depth_str = Double.toString((double)Math.round(depth * 100d) / 100d);
+                LocationType location = new LocationType(Math.toDegrees(lat), Math.toDegrees(lon));
+                Point2D pt = renderer.getScreenPosition(location);
+                clone.translate(pt.getX(), pt.getY());
 
-            // Should be done according to colormap, not like this..
-            Color col = chooseColor(depth);
-            clone.setColor(col);
+                // Should be done according to colormap, not like this..
+                Color col = chooseColor(depth);
+                clone.setColor(col);
 
-            clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
-            if(show_soundings)
-                clone.drawString(I18n.text(depth_str), 10, 0);
+                clone.fill(new Ellipse2D.Double(0, 0, 10, 10));
+                if(show_soundings)
+                    clone.drawString(I18n.text(depth_str), 10, 0);
+            }
         }
 
         if(show_single_transect)
