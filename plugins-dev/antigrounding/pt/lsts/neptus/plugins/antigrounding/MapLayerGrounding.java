@@ -39,6 +39,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Collections;
 import java.awt.Graphics2D;
+import java.awt.Dimension;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -84,6 +85,9 @@ import pt.lsts.neptus.console.ConsolePanel;
 import pt.lsts.neptus.console.notifications.Notification;
 import pt.lsts.neptus.gui.PropertiesEditor;
 import javax.swing.JOptionPane;
+import javax.swing.JDialog;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 import pt.lsts.neptus.planeditor.IEditorMenuExtension;
 import pt.lsts.neptus.planeditor.IMapPopup;
 import pt.lsts.neptus.i18n.I18n;
@@ -240,12 +244,19 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     ArrayList<ArrayList<Double>> wrecks = new ArrayList<ArrayList<Double>>();
     ArrayList<ArrayList<Double>> stones = new ArrayList<ArrayList<Double>>();
     public ArrayList<LocationType> regimes_vertices = new ArrayList<LocationType>();
+    public ArrayList<Double> depth_contour = new ArrayList<Double>();
 
     public static final Color DARK_BLUE = new Color(0,0,204);
 
     private List<Image> images = new ArrayList<Image>();
 
     public String current_dir = System.getProperties().getProperty("user.dir") + "/plugins-dev/antigrounding/pt/lsts/neptus/plugins/antigrounding/";
+
+    //public String[] contour_km = {"1","2","5","10","20"};
+    //public String[] drval2 = {"5","10","20"};
+    //public JComboBox jc = new JComboBox(contour_km);
+    //public JComboBox jd = new JComboBox(drval2);
+
 
     // Advanced settings
     //@NeptusProperty(name = "Minimum Turn Radius", description = "Lateral turning radius of UAV (m).", 
@@ -775,18 +786,77 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
 
         if(!show_depth_cont)
         {
+            //jc.setEditable(true);
+            //jd.setEditable(true);
             featuresMenu.add(new JMenuItem("Show Depth Contours")).addActionListener(new ActionListener(){
                 @Override
                 public void actionPerformed(ActionEvent e) {
+
+                    /*JTextField fside = new JTextField();
+                    JTextField fdepth = new JTextField();
+
+                    Object[] options = { "OK", "CANCEL" };
+
+                    Object[] message = {
+                        "Square side (km)", fside,
+                        "Contour depth (m)", fdepth,
+                    };
+                    
+                    int option = JOptionPane.showConfirmDialog(getConsole(), message, "Depth Contours Query", JOptionPane.OK_CANCEL_OPTION);
+                    if (option == JOptionPane.OK_OPTION)
+                    {
+                        double side = Double.parseDouble(fside.getText());
+                        double depth = Double.parseDouble(fdepth.getText());
+                        if((side <= 0 || side > 20) && (depth > 0 && depth < 20))
+                            JOptionPane.showOptionDialog(getConsole(), "Choose contour query in the range [0,20] km", "Warning",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,null, options, options[0]);
+                        if((depth <= 0 || depth > 20) && (side > 0 && side < 20) )
+                            JOptionPane.showOptionDialog(getConsole(), "Choose contour depth in the range [0,20] meters", "Warning",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,null, options, options[0]);
+                        if((side <= 0 || side > 20) && (depth <= 0 || depth >20))
+                            JOptionPane.showOptionDialog(getConsole(), "Choose contour query in the range [0,20] km"+"\n"+"Choose contour depth in the range [0,20] meters", "Warning",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,null, options, options[0]);
+                        
+                        if((depth > 0 && depth <= 20) && (side > 0 && side <= 20))
+                        {
+                            depth_contour.add(side);
+                            depth_contour.add(depth);
+
+                            try {
+                                manageFeature(depth_cont_layer, depth_conts);
+                                show_depth_cont = true;
+                            } catch (Exception exc) {
+                            }
+                        }
+                    }*/
+
+                    /*//create a JOptionPane
+                    Object[] options = new Object[] {"OK"};
+                    JOptionPane jop = new JOptionPane("Please select square side (km) and depth (m) for depth contours",
+                                                    JOptionPane.QUESTION_MESSAGE,
+                                                    JOptionPane.DEFAULT_OPTION,
+                                                    null,options, null);
+
+                    //add combos to JOptionPane
+                    jop.add(jc);
+                    jop.add(jd);
+
+                    //create a JDialog and add JOptionPane to it 
+                    JDialog diag = new JDialog();
+                    diag.getContentPane().add(jop);
+                    diag.pack();
+                    diag.setVisible(true);*/
+                    
+                    Object[] options = { "OK", "CANCEL" };
                     String radiusStr = JOptionPane.showInputDialog(getConsole(), I18n.text("Please enter square side (km) for depth contours"), radius_depare);
                     if (radiusStr == null)
                         return;
                     try {
                         radius_depare = Float.parseFloat(radiusStr);
-                        if (radius_depare < 0 )
-                            throw new Exception("Radius must be greater than 0");
-                        manageFeature(depth_cont_layer, depth_conts);
-                        show_depth_cont = true;
+                        if (radius_depare < 1 || radius_depare > 20)
+                            JOptionPane.showOptionDialog(getConsole(), "Choose contour query in the range [0,20] km", "Warning",JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,null, options, options[0]);
+                        else
+                        {
+                            manageFeature(depth_cont_layer, depth_conts);
+                            show_depth_cont = true;
+                        }
                     } catch (Exception exc) {
                         // TODO: handle exception.
                     }
@@ -799,6 +869,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 public void actionPerformed(ActionEvent e) {
                     show_depth_cont = false;
                     depth_conts.clear();
+                    depth_contour.clear();
                 }
             });
         }
@@ -886,7 +957,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<Double> lats = new ArrayList<Double>();
         ArrayList<Double> lons = new ArrayList<Double>();
 
-        if(name.equals(depth_cont_layer) && radius_depare != 0.0)
+        if(name.equals(depth_cont_layer))
         {
             boolean dp = true;
             depth_conts = getSquare(mouse_click.getLatitudeRads(), mouse_click.getLongitudeRads(), radius_depare*1000, dp);
@@ -1156,6 +1227,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
         ArrayList<ArrayList<Double>> all = new ArrayList<>();
         ArrayList<Double> lats = new ArrayList<>();
         ArrayList<Double> lons = new ArrayList<>();
+        ArrayList<Double> drvals1 = new ArrayList<>();
+        ArrayList<Double> drvals2 = new ArrayList<>();
         ArrayList<Double> depths = new ArrayList<>();
         String c_stmt = "";
         
@@ -1201,8 +1274,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             all.add(depths);
         }
         else
-        {
-            c_stmt = c_stmt + "select Lat,Lon from 'DEPARE' where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";";
+        {  
+            c_stmt = c_stmt + "select * from 'DEPARE' where Lat between " + lat_minus_displaced + " and " + lat_plus_displaced + " and Lon between " + lon_minus_displaced + " and " + lon_plus_displaced + ";"; //DRVAL1 > 1.0 AND
             System.out.printf("%s\n", c_stmt);
 
             synchronized (ser.conn) {
@@ -1214,14 +1287,19 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 }
 
                 while(rs.next()) {
-                    lats.add(rs.getDouble(1));
-                    lons.add(rs.getDouble(2));
-                    //System.out.printf("%f, %f\n", Math.toDegrees(rs.getDouble(1)), Math.toDegrees(rs.getDouble(2)));
+                    //System.out.printf("%f, %f, %f, %f\n", Math.toDegrees(rs.getDouble(1)), Math.toDegrees(rs.getDouble(2)), rs.getDouble(3), rs.getDouble(4));
+                    lats.add(rs.getDouble(2));
+                    lons.add(rs.getDouble(1));
+                    drvals1.add(rs.getDouble(3));
+                    drvals2.add(rs.getDouble(4));
+                    
                 }
                 rs.close();
             }
             all.add(lats);
             all.add(lons);
+            all.add(drvals1);
+            all.add(drvals2);
         }
         return all;
     }
@@ -1386,6 +1464,22 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
             color = new Color(163, 8, 24);
         else if(depth >= -20 && depth < 0)
             color = new Color(172, 7, 7);
+
+        return color;
+    }
+
+    public Color chooseContourColor(double drval2){
+        Color color = new Color(0);
+        if(drval2 == 0.5)
+            color = new Color(0,0,0);
+        else if(drval2 == 5.0)
+            color = new Color(0,0,128);
+        else if(drval2 == 10.0)
+            color = new Color(0,0,205);
+        else if(drval2 == 15.0)
+            color = new Color(0,0,255);
+        else if(drval2 == 20.0)
+            color = new Color(102,102,255);
 
         return color;
     }
@@ -1621,7 +1715,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
                 Point2D pt = renderer.getScreenPosition(location);
                 clone.translate(pt.getX(), pt.getY());
 
-                clone.setColor(DARK_BLUE);
+                Color col = chooseContourColor(depth_conts.get(3).get(i));
+                clone.setColor(col);
                 clone.fill(new Rectangle2D.Double(0, 0, 5, 5));
                 //clone.drawString(I18n.text("dc"), 10, 0);
             }
@@ -1788,14 +1883,64 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     }
 
     private void paintColorbars(Graphics2D go, StateRenderer2D renderer) {
-        int offsetHeight = 180;
+        int offsetHeight = 80;
         int offsetWidth = 15;
-        int offsetDelta = 250;
+        int offsetHeight_d = 180;
+        int offsetWidth_d = 15;
+
         Graphics2D gl = (Graphics2D) go.create();
         gl.translate(offsetWidth, offsetHeight);
-        ColorBarPainterUtil.paintColorBar(gl, colorMap, I18n.text("Depth"), "meters", -1000, 0);
+
+        ArrayList<Color> colors_depths = new ArrayList<Color>();
+        colors_depths.add(new Color(43, 15, 249));
+        colors_depths.add(new Color(71, 13, 197));
+        colors_depths.add(new Color(98, 12, 145));
+        colors_depths.add(new Color(135, 9, 76));
+        colors_depths.add(new Color(154, 8, 42));
+        colors_depths.add(new Color(163, 8, 24));
+        colors_depths.add(new Color(172, 7, 7));
+        String[] colors_sound_depths = {"< -1000", "[-1000,-500]", "[-500,-250]", "[-250,-100]", "[-100,-50]","[-50,-20]", "[-20,0]"};
+        for (int i = 0; i < colors_depths.size(); i++) {
+            gl.setColor(colors_depths.get(i));
+            gl.fillRect(20, 20 + 150 / colors_depths.size() * i, 20, 150 / colors_depths.size());
+            if(i==0)
+            {
+                gl.drawString(I18n.text("Soundings"), 5, 5 + 150 / colors_depths.size() * i);
+                gl.drawString(colors_sound_depths[i], 50, 35 + 150 / colors_depths.size() * i);
+            } else
+                gl.drawString(colors_sound_depths[i], 50, 35 + 150 / colors_depths.size() * i);
+            
+        }
         gl.dispose();
-        offsetHeight += offsetDelta;
+
+        if(show_depth_cont)
+        {
+            ArrayList<Color> colors_cont = new ArrayList<Color>();
+            colors_cont.add(new Color(0,0,0));
+            colors_cont.add(new Color(0,0,128));
+            colors_cont.add(new Color(0,0,205));
+            colors_cont.add(new Color(0,0,255));
+            colors_cont.add(new Color(102,102,255));
+            String[] colors_cont_depths = {"-0.5", "-5.0", "-10.0", "-15.0","-20.0"};
+
+            Graphics2D gl_ = (Graphics2D) go.create();
+            gl_.translate(offsetWidth_d, offsetHeight_d);
+
+            for (int i = 0; i < colors_cont.size(); i++) {
+                gl_.setColor(colors_cont.get(i));
+                gl_.fillRect(20, 150 + 150 / colors_cont.size() * i, 20, 150 / colors_cont.size());
+                //gl_.fillRect(frame.getWidth() / colors.length * i, 0, frame.getWidth()
+                //            / colors.length, frame.getHeight());
+                if(i==0)
+                {
+                    gl_.drawString(I18n.text("Contour"), 5, 140 + 150 / colors_cont.size() * i);
+                    gl_.drawString(colors_cont_depths[i], 50, 170 + 150 / colors_cont.size() * i);
+                } else
+                    gl_.drawString(colors_cont_depths[i], 50, 170 + 150 / colors_cont.size() * i);
+                
+            }
+            gl_.dispose();
+        }
     }
 
     /*@Subscribe
