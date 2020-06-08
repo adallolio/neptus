@@ -140,7 +140,8 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     
     @NeptusProperty(name = "Database path")
     //public String db_path = "ENCs/B1420_grid50_WGS84.db";
-    public String db_path = "ENCs/poi_depthmap_depare-rad-indexed.db";
+    //public String db_path = "ENCs/poi_depthmap_depare-rad-indexed.db";
+    static public String db_path = "ENCs/Nordfjord.db";
 
     @NeptusProperty(name = "Buoys layer name", description = "Buoys layer name", 
             userLevel = LEVEL.ADVANCED, category = "Advanced")
@@ -365,7 +366,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     }
 
     // I would like this to be inside a menu like "Connect to DB", but I cannot make it!
-    public static final SQLiteSerialization ser = SQLiteSerialization.connect("ENCs/poi_depthmap_depare-rad-indexed.db"); // use variable db_path
+    public static final SQLiteSerialization ser = SQLiteSerialization.connect(db_path); // use variable db_path "ENCs/poi_depthmap_depare-rad-indexed.db"
     // This function should be used.
     //private void addDBConnect(JPopupMenu popup){
         
