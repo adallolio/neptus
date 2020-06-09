@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<config format="1" version="2017.01.0 (L3,a9c875d,dirty)" system="ntnu-autonaut-L3" i18n="en_US">
+<config format="1" version="2017.01.0 (L3,aca0aad,dirty)" system="ntnu-autonaut-L3" i18n="en_US">
 <section name="Text Message Parser" name-i18n="Text Message Parser">
 <param name="Entity Label">
 <name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Text Message Parser</default><units></units><desc>Main entity label</desc></param>
@@ -213,11 +213,11 @@
 <param name="Input Timeout">
 <name-i18n>Input Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5.0</default><units>s</units><desc>Amount of seconds to wait for data before reporting an error</desc><min>2.0</min></param>
 <param name="CDOM -- Dark Counts">
-<name-i18n>CDOM -- Dark Counts</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>41</default><units></units><desc>Signal output of the meter in clean water with black tape over detector</desc></param>
+<name-i18n>CDOM -- Dark Counts</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>62</default><units></units><desc>Signal output of the meter in clean water with black tape over detector</desc></param>
 <param name="CDOM -- Scale Factor">
-<name-i18n>CDOM -- Scale Factor</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0896</default><units></units><desc>Scale factor is used to derive instrument output concentration from the raw signal output of the fluorometer</desc></param>
+<name-i18n>CDOM -- Scale Factor</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0916</default><units></units><desc>Scale factor is used to derive instrument output concentration from the raw signal output of the fluorometer</desc></param>
 <param name="Chlorophyll -- Dark Counts">
-<name-i18n>Chlorophyll -- Dark Counts</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>44</default><units></units><desc>Signal output of the meter in clean water with black tape over detector</desc></param>
+<name-i18n>Chlorophyll -- Dark Counts</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>49</default><units></units><desc>Signal output of the meter in clean water with black tape over detector</desc></param>
 <param name="Chlorophyll -- Scale Factor">
 <name-i18n>Chlorophyll -- Scale Factor</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0073</default><units></units><desc>Scale factor is used to derive instrument output concentration from the raw signal output of the fluorometer</desc></param>
 <param name="Scattering -- Dark Counts">
@@ -305,7 +305,11 @@
 <param name="Measurement String Identifier">
 <name-i18n>Measurement String Identifier</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>4835</default><units></units><desc>Measurement command string identifier</desc></param>
 <param name="Entity Label - Temperature">
-<name-i18n>Entity Label - Temperature</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Depth Sensor</default><units></units><desc>Entity label of the IMU</desc></param>
+<name-i18n>Entity Label - Temperature</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD Temperature</default><units></units><desc>Entity label of the CTD</desc></param>
+<param name="Entity Label - Depth">
+<name-i18n>Entity Label - Depth</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD Depth</default><units></units><desc>Entity label of the CTD</desc></param>
+<param name="Entity Label - Salinity">
+<name-i18n>Entity Label - Salinity</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD Salinity</default><units></units><desc>Entity label of the CTD</desc></param>
 </section>
 <section name="TBLive" name-i18n="TBLive">
 <param name="Entity Label">
