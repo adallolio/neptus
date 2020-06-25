@@ -140,8 +140,7 @@ public class MapLayerGrounding extends SimpleRendererInteraction implements Rend
     
     @NeptusProperty(name = "Database path")
     //public String db_path = "ENCs/B1420_grid50_WGS84.db";
-    //public String db_path = "ENCs/poi_depthmap_depare-rad-indexed.db";
-    static public String db_path = "ENCs/Nordfjord.db";
+    static public String db_path = "ENCs/poi_depthmap_depare-rad-indexed.db";
 
     @NeptusProperty(name = "Buoys layer name", description = "Buoys layer name", 
             userLevel = LEVEL.ADVANCED, category = "Advanced")
