@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <console name="Neptus Console" width="1855" height="1056" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
-  <!-- Data saved on 2020-03-26T13:48:05.0Z with Neptus version 2019.02.1-dev (compiled on 2020-03-26, gneptus-2019.02.1-dmsmw-85-g14bace6-dirty). -->
+  <!-- Data saved on 2020-07-07T13:44:55.0Z with Neptus version 2019.02.1-dev (compiled on 2020-07-01, gneptus-2019.02.1-dmsmw-103-g90d2ae9-dirty). -->
   <mainpanel name="console main panel">
     <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1855" height="1000">
       <properties>
@@ -124,7 +124,7 @@
           <entry key="Periodicity (milliseconds)">100</entry>
           <entry key="Traces Script">rudder_angle: ${SetServoPosition.value}*180/Math.PI;
 
-</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="300" height="600">        <properties>          <entry key="Enable Selection">false</entry>
+</entry>        </properties>      </child>      <child class="pt.lsts.neptus.plugins.s57.S57SoundingsExporter" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.plugins.sim.SimulationActionsPlugin" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.params.SystemConfiguration" x="0" y="0" width="0" height="0">        <properties/>      </child>      <child class="pt.lsts.neptus.console.plugins.SystemsList" x="0" y="0" width="220" height="250">        <properties>          <entry key="Enable Selection">false</entry>
         </properties>
       </child>
       <child class="pt.lsts.neptus.plugins.txtcmd.TextCommands" x="0" y="0" width="0" height="0">
@@ -160,21 +160,7 @@ course: ${GpsFix.cog} * 180 / Math.PI;</entry>
         <properties/>
       </child>
       <child class="pt.lsts.neptus.plugins.antigrounding.MapLayerGrounding" x="0" y="0" width="0" height="0">
-        <properties>
-          <entry key="Ignore Evasive">false</entry>
-          <entry key="Descend Angle">4.0</entry>
-          <entry key="Distance in Front">-100.0</entry>
-          <entry key="Speed WP1-2">18.0</entry>
-          <entry key="Minimum Turn Radius">150.0</entry>
-          <entry key="Net Height">3.0</entry>
-          <entry key="Ground Level">30.0</entry>
-          <entry key="Net Latitude">63.6286</entry>
-          <entry key="Speed WP3-5">16.0</entry>
-          <entry key="Net Longitude">9.72757</entry>
-          <entry key="Distance Behind">100.0</entry>
-          <entry key="Attack Angle">4.0</entry>
-          <entry key="Net Orientation">66.5</entry>
-        </properties>
+        <properties/>
       </child>
     </subpanel>
   </mainpanel>

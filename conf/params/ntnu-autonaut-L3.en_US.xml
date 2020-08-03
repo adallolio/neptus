@@ -169,7 +169,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Activate Sensor">
 <name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>global</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc><min>0</min><max>1</max></param>
 <param name="Serial Port - Device">
@@ -193,7 +193,37 @@
 <param name="Conductivity Tau Correction">
 <name-i18n>Conductivity Tau Correction</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>7.0</default><units></units><desc>Conductivity cell thermal mass tau correction.</desc><min>5.0</min><max>10.0</max></param>
 <param name="Science Sensors Timeout">
-<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+</section>
+<section name="EcoPAR" name-i18n="EcoPAR">
+<param name="Entity Label">
+<name-i18n>Entity Label</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>EcoPAR</default><units></units><desc>Main entity label</desc></param>
+<param name="Execution Priority">
+<name-i18n>Execution Priority</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>10</default><units></units><desc>Execution priority</desc></param>
+<param name="Activation Time">
+<name-i18n>Activation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Deactivation Time">
+<name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
+<param name="Debug Level">
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Debug</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<param name="Activate Sensor">
+<name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
+<param name="Serial Port - Device">
+<name-i18n>Serial Port - Device</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>/dev/ttyUSB0</default><units></units><desc>Serial port device used to communicate with the sensor</desc></param>
+<param name="Serial Port - Baud Rate">
+<name-i18n>Serial Port - Baud Rate</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>19200</default><units></units><desc>Serial port Baud Rate</desc></param>
+<param name="Input Timeout">
+<name-i18n>Input Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>5.0</default><units>s</units><desc>Amount of seconds to wait for data before reporting an error</desc><min>2.0</min></param>
+<param name="Sensor Medium">
+<name-i18n>Sensor Medium</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Air</default><units></units><desc>Sensor Medium</desc></param>
+<param name="Immersion Coefficient">
+<name-i18n>Immersion Coefficient</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>1.3589</default><units></units><desc>Immersion Coefficient</desc></param>
+<param name="Scaling Factor">
+<name-i18n>Scaling Factor</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0.887</default><units></units><desc>Scaling Factor</desc></param>
+<param name="Voltage Offset">
+<name-i18n>Voltage Offset</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>1.362</default><units></units><desc>Voltage Offset</desc></param>
+<param name="Science Sensors Timeout">
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
 </section>
 <section name="EcoPuck" name-i18n="EcoPuck">
 <param name="Entity Label">
@@ -205,7 +235,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Activate Sensor">
 <name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
 <param name="Serial Port - Device">
@@ -227,7 +257,7 @@
 <param name="Turbidity -- Scale Factor">
 <name-i18n>Turbidity -- Scale Factor</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0.0024</default><units></units><desc>Scale factor is used to derive instrument output concentration from the raw signal output of the fluorometer</desc></param>
 <param name="Science Sensors Timeout">
-<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
 </section>
 <section name="Nortek500" name-i18n="Nortek500">
 <param name="Entity Label">
@@ -239,7 +269,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Activate Sensor">
 <name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
 <param name="IO Port - Device">
@@ -265,7 +295,7 @@
 <param name="Sound Velocity">
 <name-i18n>Sound Velocity</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>0</default><units>m/s</units><desc>Sound velocity (0 will set sensor to use measured sound velocity)</desc><min>1300.0</min><max>1700.0</max></param>
 <param name="Log File Name">
-<name-i18n>Log File Name</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Data.ad2cp</default><units></units><desc>Filename of the raw data file where all the measured binary data will be stored in the ADCP</desc></param>
+<name-i18n>Log File Name</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>/root/ADCP_logs/Data.ad2cp</default><units></units><desc>Filename of the raw data file where all the measured binary data will be stored in the ADCP</desc></param>
 <param name="Number of Cells">
 <name-i18n>Number of Cells</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>30</default><units></units><desc>Number of Cells</desc><min>1</min><max>200</max></param>
 <param name="Cell Size">
@@ -288,6 +318,8 @@
 <name-i18n>Bandwidth</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>BROAD</default><units></units><desc>Bandwidth selection. (“NARROW”, “BROAD”)</desc></param>
 <param name="Entity Label - Salinity">
 <name-i18n>Entity Label - Salinity</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD</default><units></units><desc>Entity label of the CTD</desc></param>
+<param name="Science Sensors Timeout">
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
 </section>
 <section name="Optode4835" name-i18n="Optode4835">
 <param name="Entity Label">
@@ -299,7 +331,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Activate Sensor">
 <name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
 <param name="Serial Port - Device">
@@ -311,7 +343,13 @@
 <param name="Measurement String Identifier">
 <name-i18n>Measurement String Identifier</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>4835</default><units></units><desc>Measurement command string identifier</desc></param>
 <param name="Science Sensors Timeout">
-<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+<param name="Entity Label - Temperature">
+<name-i18n>Entity Label - Temperature</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD</default><units></units><desc>Entity label of the CTD</desc></param>
+<param name="Entity Label - Depth">
+<name-i18n>Entity Label - Depth</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD</default><units></units><desc>Entity label of the CTD</desc></param>
+<param name="Entity Label - Salinity">
+<name-i18n>Entity Label - Salinity</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>SBE49FastCAT CTD</default><units></units><desc>Entity label of the CTD</desc></param>
 </section>
 <section name="TBLive" name-i18n="TBLive">
 <param name="Entity Label">
@@ -323,7 +361,7 @@
 <param name="Deactivation Time">
 <name-i18n>Deactivation Time</name-i18n><type>integer</type><visibility>developer</visibility><scope>global</scope><default>0</default><units></units><desc></desc></param>
 <param name="Debug Level">
-<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>Spew</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
+<name-i18n>Debug Level</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default>None</default><units></units><desc></desc><values>None, Debug, Trace, Spew</values><values-i18n>None, Debug, Trace, Spew</values-i18n></param>
 <param name="Activate Sensor">
 <name-i18n>Activate Sensor</name-i18n><type>boolean</type><visibility>user</visibility><scope>idle</scope><default>false</default><units></units><desc>Controls sensor activation/deactivation</desc></param>
 <param name="Serial Port - Device">
@@ -339,7 +377,7 @@
 <param name="Sentence Order">
 <name-i18n>Sentence Order</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>Sentence order</desc></param>
 <param name="Science Sensors Timeout">
-<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>30.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
+<name-i18n>Science Sensors Timeout</name-i18n><type>real</type><visibility>developer</visibility><scope>global</scope><default>10.0</default><units>s</units><desc>IMC::ScienceSensors is sent at timer expiration</desc></param>
 <param name="Initialization String 0 - Command">
 <name-i18n>Initialization String 0 - Command</name-i18n><type>string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc></desc></param>
 <param name="Initialization String 0 - Reply">
@@ -599,7 +637,7 @@
 <param name="LSF Volume Directories">
 <name-i18n>LSF Volume Directories</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc></desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AcousticBackscatter, ADCPBeam, AirSaturation, EntityList, AngularVelocity, Announce, Chlorophyll, CompassHeading, Conductivity, ControlLoops, ControlParcel, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, DissolvedOrganicMatter, DissolvedOxygen, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, OpticalBackscatter, PathControlState, PlanSpecification, PlanControl, PlanControlState, PlanDB, PathControlState, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, ScienceSensors, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, SoundSpeed, StopManeuver, TBRFishTag, TBRSensor, Teleoperation, TeleoperationDone, Temperature, Turbidity, VehicleCommand, VehicleMedium, VehicleState, VehicleState, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, Acceleration, AcousticBackscatter, ADCPBeam, AirSaturation, EntityList, AngularVelocity, Announce, Chlorophyll, CompassHeading, Conductivity, ControlLoops, ControlParcel, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, DataSanity, Depth, DesiredControl, DesiredZ, DesiredHeading, DesiredHeadingRate, DesiredPath, DesiredPitch, DesiredSpeed, DesiredVelocity, DevDataBinary, DevDataText, DissolvedOrganicMatter, DissolvedOxygen, Distance, EmergencyControl, EmergencyControlState, EstimatedFreq, EntityActivationState, EntityList, EntityMonitoringState, EntityParameters, EntityState, EstimatedState, EstimatedStreamVelocity, EulerAngles, EulerAnglesDelta, FollowRefState, FuelLevel, GpsFix, GpsFixRejection, GroundVelocity, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, ManeuverControlState, MagneticField, OpticalBackscatter, PAR, PathControlState, PlanSpecification, PlanControl, PlanControlState, PlanDB, PopEntityParameters, Power, PowerChannelControl, PowerChannelState, PowerSettings, PushEntityParameters, Pressure, QueryEntityParameters, Reference, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, RemoteState, Rpm, RSSI, Salinity, SaveEntityParameters, ScienceSensors, ScienceSensorsReply, SetEntityParameters, ServoPosition, SetServoPosition, SetThrusterActuation, SimulatedState, SoundSpeed, StopManeuver, TBRFishTag, TBRSensor, Teleoperation, TeleoperationDone, Temperature, Turbidity, VehicleCommand, VehicleMedium, VehicleState, VehicleState, Voltage, WaterDensity, WaterVelocity</default><units></units><desc></desc></param>
 </section>
 <section name="UDP" name-i18n="UDP">
 <param name="Entity Label">
@@ -635,7 +673,7 @@
 <param name="Underwater Communications">
 <name-i18n>Underwater Communications</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>true</default><units></units><desc>Allow underwater communication when limited comms are being simulated</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AcousticBackscatter, ADCPBeam, AngularVelocity, AirSaturation, AlignmentState, Chlorophyll, CompassHeading, Conductivity, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, Depth, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, DevDataText, DissolvedOrganicMatter, DissolvedOxygen, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, OpticalBackscatter, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, Pressure, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, Salinity, ScienceSensors, ServoPosition, SetServoPosition, SetThrusterActuation, SoundSpeed, SimulatedState, StorageUsage, TBRFishTag, TBRSensor, Teleoperation, TeleoperationDone, Temperature, TrexObservation, TrexOperation, TrexToken, TrexPlan, Turbidity, VehicleMedium, VehicleState, Voltage</default><units></units><desc>List of messages to transport</desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Acceleration, AcousticBackscatter, ADCPBeam, AngularVelocity, AirSaturation, AlignmentState, Chlorophyll, CompassHeading, Conductivity, Correlation, CpuUsage, Current, CurrentProfile, CurrentProfileCell, CurrentVelocity, Depth, DesiredHeading, DesiredSpeed, DevCalibrationControl, DevCalibrationState, DevDataText, DissolvedOrganicMatter, DissolvedOxygen, Distance, EntityList, EntityParameters, EntityState, EstimatedFreq, EstimatedState, EulerAngles, FollowRefState, FuelLevel, Heartbeat, IridiumMsgRx, IridiumMsgTx, IridiumTxStatus, LogBookEntry, LogBookControl, MagneticField, OperationalLimits, OpticalBackscatter, PAR, PathControlState, PlanControl, PlanControlState, PlanDB, PlanGeneration, Power, PowerSettings, Pressure, RemoteActions, RemoteActionsRequest, RemoteSensorInfo, Rpm, Salinity, ScienceSensors, ScienceSensorsReply, ServoPosition, SetServoPosition, SetThrusterActuation, SoundSpeed, SimulatedState, StorageUsage, TBRFishTag, TBRSensor, Teleoperation, TeleoperationDone, Temperature, TrexObservation, TrexOperation, TrexToken, TrexPlan, Turbidity, VehicleMedium, VehicleState, Voltage</default><units></units><desc>List of messages to transport</desc></param>
 <param name="Always Transmitted Messages">
 <name-i18n>Always Transmitted Messages</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>Abort, SimulatedState</default><units></units><desc>List of messages that will always be transmitted disregarding communication limitations</desc></param>
 <param name="Dynamic Nodes">
@@ -709,7 +747,7 @@
 <param name="Static Destinations">
 <name-i18n>Static Destinations</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>192.168.88.250:6018</default><units></units><desc>List of &lt;IPv4&gt;:&lt;Port&gt; destinations that will always receive outgoing messages</desc></param>
 <param name="Rate Limiters">
-<name-i18n>Rate Limiters</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>ScienceSensors:0.1</default><units></units><desc>List of &lt;Message&gt;:&lt;Frequency&gt;</desc></param>
+<name-i18n>Rate Limiters</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>ScienceSensors:0.2</default><units></units><desc>List of &lt;Message&gt;:&lt;Frequency&gt;</desc></param>
 <param name="Filtered Entities">
 <name-i18n>Filtered Entities</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>List of &lt;Message&gt;:&lt;Entity&gt;+&lt;Entity&gt; that define the source entities allowed to pass message of a specific message type.</desc></param>
 <param name="Announce Service">
@@ -719,7 +757,7 @@
 <param name="Underwater Communications">
 <name-i18n>Underwater Communications</name-i18n><type>boolean</type><visibility>developer</visibility><scope>global</scope><default>false</default><units></units><desc>Allow underwater communication when limited comms are being simulated</desc></param>
 <param name="Transports">
-<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>EntityList,VehicleState,ScienceSensors,AirSaturation,Chlorophyll,CurrentProfile,Depth,DissolvedOrganicMatter,DissolvedOxygen,Pressure,Salinity,SoundSpeed,TBRFishTag,TBRSensor,Turbidity,Temperature,Conductivity</default><units></units><desc>List of messages to transport</desc></param>
+<name-i18n>Transports</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default>EntityList,VehicleState,ScienceSensorsReply,PAR,AirSaturation,Chlorophyll,CurrentProfile,Depth,DissolvedOrganicMatter,DissolvedOxygen,Pressure,Salinity,SoundSpeed,TBRFishTag,TBRSensor,Turbidity,Temperature,Conductivity</default><units></units><desc>List of messages to transport</desc></param>
 <param name="Always Transmitted Messages">
 <name-i18n>Always Transmitted Messages</name-i18n><type>list:string</type><visibility>developer</visibility><scope>global</scope><default></default><units></units><desc>List of messages that will always be transmitted disregarding communication limitations</desc></param>
 <param name="Dynamic Nodes">
