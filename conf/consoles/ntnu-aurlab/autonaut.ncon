@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<console name="Neptus Console" width="1855" height="1056" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut">
-  <!-- Data saved on 2020-07-07T13:44:55.0Z with Neptus version 2019.02.1-dev (compiled on 2020-07-01, gneptus-2019.02.1-dmsmw-103-g90d2ae9-dirty). -->
+<console name="Neptus Console" width="2495" height="1416" resizable="true" mission-file="../../../missions/NTNU/asv/jetyak_trondheim_sil.nmisz" main-vehicle="ntnu-autonaut-L3">
+  <!-- Data saved on 2021-03-15T14:44:53.0Z with Neptus version 2019.02.1-dev (compiled on 2021-03-15, gneptus-2019.02.1-dmsmw-104-g5810700-dirty). -->
   <mainpanel name="console main panel">
-    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="1855" height="1000">
+    <subpanel class="pt.lsts.neptus.console.plugins.containers.MigLayoutContainer" x="0" y="0" width="2495" height="1360">
       <properties>
         <entry key="XML Definitions">
 &lt;profiles&gt;
@@ -51,7 +51,7 @@
       <child class="pt.lsts.neptus.plugins.position.ContactMarker" x="0" y="0" width="0" height="0">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.controllers.ControllerPanel" x="0" y="0" width="0" height="0">
+      <child class="pt.lsts.neptus.controllers.ControllerPanel" x="0" y="0" width="300" height="200">
         <properties/>
       </child>
       <child class="pt.lsts.neptus.console.plugins.EntityStatePanel" x="0" y="0" width="0" height="0">
@@ -88,10 +88,10 @@
       <child class="pt.lsts.neptus.plugins.map.MapEditor" x="0" y="0" width="0" height="0">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="1549" height="1000">
+      <child class="pt.lsts.neptus.console.plugins.planning.MapPanel" x="0" y="0" width="2189" height="1360">
         <properties/>
       </child>
-      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="832">
+      <child class="pt.lsts.neptus.console.plugins.planning.MissionTreePanel" x="0" y="162" width="294" height="1192">
         <properties/>
       </child>
       <child class="pt.lsts.neptus.console.plugins.planning.MultiVehiclePlanOverlay" x="0" y="0" width="0" height="0">
